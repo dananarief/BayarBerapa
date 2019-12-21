@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "178568900941",
+    "firebase_url": "https://bayarberapa-technolovy.firebaseio.com",
+    "project_id": "bayarberapa-technolovy",
+    "storage_bucket": "bayarberapa-technolovy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178568900941:android:4830fbdf48ffe3c170c704",
+        "android_client_info": {
+          "package_name": "com.technolovy.android.bayarberapa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178568900941-kptditvarhmggd1j3tsnp8s6hobv0mrc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLGrN4d2y_47pk-Xg1QftSidqQXV5VnNM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "178568900941-kptditvarhmggd1j3tsnp8s6hobv0mrc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
