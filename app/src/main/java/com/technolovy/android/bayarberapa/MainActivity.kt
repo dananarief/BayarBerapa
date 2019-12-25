@@ -3,12 +3,18 @@ package com.technolovy.android.bayarberapa
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.startActivityForResult
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.text.FirebaseVisionText
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,6 +51,49 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
+    fun recognizeText(imgUri: Uri) {
+        val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
+        val imgAsFirebaseVisionImage = getFirebaseVisionImageFromUri(imgUri)
+        imgAsFirebaseVisionImage?.let { image ->
+            val result = detector.processImage(image)
+                .addOnSuccessListener { firebaseVisionText ->
+                    Log.d("detector", "success ${firebaseVisionText}")
+                    processTextBlock(firebaseVisionText)
+                }
+                .addOnFailureListener { e ->
+                    Log.d("detector", "error")
+                    e.printStackTrace()
+                }
+        }
+    }
+
+    fun getFirebaseVisionImageFromUri(imgUri: Uri): FirebaseVisionImage? {
+        var image: FirebaseVisionImage? = null
+        try {
+            image = FirebaseVisionImage.fromFilePath(this, imgUri)
+            Log.d("visionImageFromUri", "success")
+        } catch (e: IOException) {
+            Log.d("visionImageFromUri", "error")
+            e.printStackTrace()
+        }
+        return image
+    }
+
+    fun processTextBlock(result: FirebaseVisionText) {
+        for (block in result.textBlocks) {
+            for (line in block.lines) {
+                for (element in line.elements) {
+                    val elementText = element.text
+                    val elementConfidence = element.confidence
+                    val elementLanguages = element.recognizedLanguages
+                    val elementCornerPoints = element.cornerPoints
+                    val elementFrame = element.boundingBox
+                    Log.d("element", "text ${elementText} conf ${elementConfidence}")
+                }
+            }
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode) {
             PERMISSION_CODE -> {
@@ -61,6 +110,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView.setImageURI(data?.data)
+            data?.data?.let { recognizeText(it) }
         }
     }
 
