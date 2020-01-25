@@ -3,6 +3,8 @@ package com.technolovy.android.bayarberapa
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Point
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,10 +15,14 @@ import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
+import com.technolovy.android.bayarberapa.Model.Grab
+import com.technolovy.android.bayarberapa.Model.InvoiceITF
+import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
+    var invoice: InvoiceITF? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,11 +63,13 @@ class MainActivity : AppCompatActivity() {
         imgAsFirebaseVisionImage?.let { image ->
             val result = detector.processImage(image)
                 .addOnSuccessListener { firebaseVisionText ->
-                    Log.d("detector", "success ${firebaseVisionText}")
-                    processTextBlock(firebaseVisionText)
+                    setInvoiceBasedOnBrand(firebaseVisionText)
                 }
                 .addOnFailureListener { e ->
-                    Log.d("detector", "error")
+                    Toast.makeText(
+                        this,
+                        "Aplikasi Masih Menyiapkan Data, Mohon Coba beberapa saat lagi",
+                        Toast.LENGTH_SHORT).show()
                     e.printStackTrace()
                 }
         }
@@ -71,27 +79,25 @@ class MainActivity : AppCompatActivity() {
         var image: FirebaseVisionImage? = null
         try {
             image = FirebaseVisionImage.fromFilePath(this, imgUri)
-            Log.d("visionImageFromUri", "success")
         } catch (e: IOException) {
-            Log.d("visionImageFromUri", "error")
             e.printStackTrace()
         }
         return image
     }
 
-    fun processTextBlock(result: FirebaseVisionText) {
-        for (block in result.textBlocks) {
-            for (line in block.lines) {
-                for (element in line.elements) {
-                    val elementText = element.text
-                    val elementConfidence = element.confidence
-                    val elementLanguages = element.recognizedLanguages
-                    val elementCornerPoints = element.cornerPoints
-                    val elementFrame = element.boundingBox
-                    Log.d("element", "text ${elementText} conf ${elementConfidence}")
-                }
-            }
+    fun setInvoiceBasedOnBrand(firebaseText: FirebaseVisionText) {
+        if (firebaseText.text.contains("order summary", ignoreCase = true)) {
+            invoice = Grab()
+        } else if (firebaseText.text.contains("gojek", ignoreCase = true)) {
+            //todo: init gojek
+        } else {
+            Toast.makeText(
+                this,
+                "Mohon maaf, invoice belum dikenali. Silakan gunakan fitur manual", Toast.LENGTH_LONG
+            ).show()
         }
+
+        invoice?.processText(firebaseText)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -110,6 +116,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView.setImageURI(data?.data)
+            Log.d("set image","sukses")
             data?.data?.let { recognizeText(it) }
         }
     }
