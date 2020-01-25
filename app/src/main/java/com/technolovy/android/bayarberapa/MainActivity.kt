@@ -1,5 +1,6 @@
 package com.technolovy.android.bayarberapa
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +13,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat.startActivityForResult
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -20,23 +22,44 @@ import com.technolovy.android.bayarberapa.Model.InvoiceITF
 import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
+import java.time.Instant
+import java.time.format.DateTimeFormatter
+import androidx.core.app.ComponentActivity
+import androidx.core.app.ComponentActivity.ExtraData
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
+    private var firebaseAnalytics: FirebaseAnalytics? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         setChooseImageButton()
+    }
+
+    fun testSentTracker() {
+        var bundle = Bundle()
+        val currentTime = Calendar.getInstance().getTime()
+        bundle.putString("click_time", currentTime.toString())
+        bundle.putString("app_version", "0.1")
+        firebaseAnalytics?.logEvent("choose_image",bundle)
+        if (firebaseAnalytics != null) {
+            Log.d("firebaseAnalytics","logged")
+        }
     }
 
     fun setChooseImageButton() {
         button_choose_image.setOnClickListener {
+            testSentTracker()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                     //permission denied
-                    val permissions = arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                     //show pop up to request access on runtime
                     requestPermissions(permissions, PERMISSION_CODE)
                 } else {
