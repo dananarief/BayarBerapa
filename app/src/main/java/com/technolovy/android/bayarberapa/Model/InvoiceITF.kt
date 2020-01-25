@@ -8,6 +8,7 @@ interface InvoiceITF {
     var slug: String
     var invoiceItems: ArrayList<InvoiceItem>
     var firebaseText: FirebaseVisionText?
+    var numOfPerson: Double
 
     fun processText(firebaseText: FirebaseVisionText)
 }

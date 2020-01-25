@@ -12,6 +12,7 @@ class Grab: InvoiceITF {
     override var slug: String = "grab"
     override var invoiceItems: ArrayList<InvoiceItem> = arrayListOf<InvoiceItem>()
     override var firebaseText: FirebaseVisionText? = null
+    override var numOfPerson: Double = 1.0
 
     override fun processText(firebaseText: FirebaseVisionText) {
         //decide frame scope:
@@ -31,11 +32,12 @@ class Grab: InvoiceITF {
         fillTypeForInvoiceItems(invoiceItems)
 
         // calculate
+        calculate(invoiceItems)
 
         //print temp result, should be deleted once feature is complete
         for ((k, v) in invoiceItems) {
-            println("$k = ${v.rect} ${v.price}")
-            Log.d("result","$k = ${v.rect} ${v.price} ${v.name} ${v.quantity} ${v.type}")
+            println("$k = ${v.rect} ${v.getPriceForDebug()}")
+            Log.d("result","$k = ${v.rect} ${v.getPriceForDebug()} ${v.name} ${v.quantity} ${v.type} ${v.pricePerUnit}")
         }
 
     }
@@ -175,6 +177,52 @@ class Grab: InvoiceITF {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
+            }
+        }
+    }
+
+    fun calculate(invoiceItems: MutableMap<Rect, InvoiceItem>) {
+        //will set invoice item pricePerUnit attribute
+        var subTotal: Double = 0.0
+        var taxPercentage: Double = 0.0
+        var discountPercentage: Double = 0.0
+
+        //get info about subtotal
+        for ((k, v) in invoiceItems) {
+            if (v.name.contains("subtotal", ignoreCase = true)) {
+                subTotal = v.price
+            }
+        }
+
+        //get info about tax percentage and discount percentage
+        for ((k, v) in invoiceItems) {
+            if (v.type == InvoiceItem.InvoiceType.TAX) {
+                taxPercentage = v.price / subTotal
+            }
+
+            if (v.type == InvoiceItem.InvoiceType.DISCOUNT) {
+                discountPercentage = Math.abs(v.price) / subTotal
+            }
+        }
+
+        //assign price per qty
+        for ((k, v) in invoiceItems) {
+            if (v.type == InvoiceItem.InvoiceType.PURCHASEITEM) {
+                val pricePerQuantity = v.price/v.quantity
+
+                val discountPriceperQty: Double = pricePerQuantity * discountPercentage
+
+                val taxPricePerQty: Double = pricePerQuantity * taxPercentage
+
+                var resultPricePerUnit = pricePerQuantity
+                resultPricePerUnit += taxPricePerQty
+                resultPricePerUnit -= discountPriceperQty
+
+                v.pricePerUnit = resultPricePerUnit
+            }
+
+            if (v.type == InvoiceItem.InvoiceType.SHARED_FEE) {
+                v.pricePerUnit = v.price/numOfPerson
             }
         }
     }
