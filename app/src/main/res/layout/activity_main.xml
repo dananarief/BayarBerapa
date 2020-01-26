@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="24dp"
+            android:layout_marginBottom="12dp"
             android:scaleType="fitCenter"
             app:lottie_rawRes="@raw/catplaceholder"
             app:lottie_loop="true"
