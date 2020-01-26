@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            imageView.setImageURI(data?.data)
+            animation_view.setImageURI(data?.data)
             Log.d("set image","sukses")
 
             //comment when developing to avoid fraud

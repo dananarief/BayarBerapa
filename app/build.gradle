@@ -43,6 +43,9 @@ dependencies {
 
     //number picker
     implementation 'com.shawnlin:number-picker:2.4.8'
+
+    //lottie for animations
+    implementation 'com.airbnb.android:lottie:3.3.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
