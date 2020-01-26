@@ -28,6 +28,9 @@ import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import java.util.*
 
 
@@ -35,13 +38,26 @@ class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
     var person: Double = 0.0
     private var firebaseAnalytics: FirebaseAnalytics? = null
+    lateinit var interstitialAds: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        setMobsAds()
         setChooseImageButton()
         setPersonQtyPicker()
+    }
+
+    fun setMobsAds() {
+        MobileAds.initialize(this, "ca-app-pub-8342384986875866~7993633723")
+        interstitialAds = InterstitialAd(this)
+        //this is the real ads unit id
+        //interstitialAds.adUnitId = "ca-app-pub-8342384986875866/6260436572"
+
+        //this is the testing ads id
+        interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        interstitialAds.loadAd(AdRequest.Builder().build())
     }
 
     fun testSentTracker() {
@@ -149,6 +165,14 @@ class MainActivity : AppCompatActivity() {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageView.setImageURI(data?.data)
             Log.d("set image","sukses")
+
+            if (interstitialAds.isLoaded) {
+                //comment when developing to avoid fraud
+                //interstitialAds.show()
+            } else {
+                //tracker ads fail to load
+                Log.d("tracker", "fail to load")
+            }
             data?.data?.let { recognizeText(it) }
         }
     }
