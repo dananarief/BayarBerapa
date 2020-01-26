@@ -33,6 +33,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
+    var person: Double = 0.0
     private var firebaseAnalytics: FirebaseAnalytics? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         setChooseImageButton()
+        setPersonQtyPicker()
     }
 
     fun testSentTracker() {
@@ -70,6 +72,13 @@ class MainActivity : AppCompatActivity() {
                 //no need permission under marshmallow
                 pickImageFromGallery()
             }
+        }
+    }
+
+    fun setPersonQtyPicker() {
+        number_picker.setOnValueChangedListener { picker, oldVal, newVal ->
+            Log.d("number picker", "${picker.value}")
+            person = picker.value.toDouble()
         }
     }
 

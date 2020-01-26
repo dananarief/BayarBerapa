@@ -37,6 +37,9 @@ dependencies {
 
     // Add the Firebase SDK for Crashlytics.
     implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta01'
+
+    //number picker
+    implementation 'com.shawnlin:number-picker:2.4.8'
 }
 
 apply plugin: 'com.google.gms.google-services'
