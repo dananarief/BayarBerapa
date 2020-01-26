@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        setMobsAds()
+        //setMobsAds()
         setChooseImageButton()
         setPersonQtyPicker()
     }
@@ -166,13 +166,13 @@ class MainActivity : AppCompatActivity() {
             imageView.setImageURI(data?.data)
             Log.d("set image","sukses")
 
-            if (interstitialAds.isLoaded) {
-                //comment when developing to avoid fraud
-                //interstitialAds.show()
-            } else {
-                //tracker ads fail to load
-                Log.d("tracker", "fail to load")
-            }
+            //comment when developing to avoid fraud
+//            if (interstitialAds.isLoaded) {
+//                //interstitialAds.show()
+//            } else {
+//                //tracker ads fail to load
+//                Log.d("tracker", "fail to load")
+//            }
             data?.data?.let { recognizeText(it) }
         }
     }
