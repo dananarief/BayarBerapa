@@ -4,30 +4,20 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Point
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat.startActivityForResult
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Model.Grab
 import com.technolovy.android.bayarberapa.Model.InvoiceITF
-import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
-import java.time.Instant
-import java.time.format.DateTimeFormatter
-import androidx.core.app.ComponentActivity
-import androidx.core.app.ComponentActivity.ExtraData
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -45,8 +35,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         //setMobsAds()
-        setChooseImageButton()
+        setButtonListener()
         setPersonQtyPicker()
+        render()
     }
 
     fun setMobsAds() {
@@ -71,23 +62,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setChooseImageButton() {
+    fun setButtonListener() {
         button_choose_image.setOnClickListener {
             testSentTracker()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                    //permission denied
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    //show pop up to request access on runtime
-                    requestPermissions(permissions, PERMISSION_CODE)
-                } else {
-                    //permission already granted
-                    pickImageFromGallery()
-                }
+            if (invoice == null) {
+                chooseButton()
             } else {
-                //no need permission under marshmallow
+                processButton()
+            }
+        }
+    }
+
+    fun processButton() {
+        Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
+    }
+
+    fun chooseButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                //permission denied
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                //show pop up to request access on runtime
+                requestPermissions(permissions, PERMISSION_CODE)
+            } else {
+                //permission already granted
                 pickImageFromGallery()
             }
+        } else {
+            //no need permission under marshmallow
+            pickImageFromGallery()
         }
     }
 
@@ -134,6 +137,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun setInvoiceBasedOnBrand(firebaseText: FirebaseVisionText) {
+        // todo: should be added loading here
         if (firebaseText.text.contains("order summary", ignoreCase = true)) {
             invoice = Grab()
         } else if (firebaseText.text.contains("gojek", ignoreCase = true)) {
@@ -145,7 +149,13 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
-        invoice?.processText(firebaseText)
+        render()
+        invoice?.onFinishProcessInvoice = {
+            //Log.d("toast invoice","toast")
+            //Toast.makeText(this,"berhasil di baca", Toast.LENGTH_LONG).show()
+        }
+        //invoice?.processText(firebaseText)
+
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -176,6 +186,23 @@ class MainActivity : AppCompatActivity() {
             data?.data?.let { recognizeText(it) }
         }
     }
+
+    /// Render Part
+
+    fun render() {
+        renderChooseImageText()
+    }
+
+    fun renderChooseImageText() {
+        if (invoice == null) {
+            Log.d("render button","choose")
+            button_choose_image.text = "Pilih Gambar"
+        } else {
+            Log.d("render button","calculate")
+            button_choose_image.text = "Hitung"
+        }
+    }
+
 
     companion object {
         private val IMAGE_PICK_CODE = 1000

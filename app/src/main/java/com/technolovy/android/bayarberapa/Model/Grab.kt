@@ -13,6 +13,7 @@ class Grab: InvoiceITF {
     override var invoiceItems: ArrayList<InvoiceItem> = arrayListOf<InvoiceItem>()
     override var firebaseText: FirebaseVisionText? = null
     override var numOfPerson: Double = 1.0
+    override var onFinishProcessInvoice: ((MutableMap<Rect, InvoiceItem>)->Unit)? = null
 
     override fun processText(firebaseText: FirebaseVisionText) {
         //decide frame scope:
@@ -40,6 +41,7 @@ class Grab: InvoiceITF {
             Log.d("result","$k = ${v.rect} ${v.getPriceForDebug()} ${v.name} ${v.quantity} ${v.type} ${v.pricePerUnit}")
         }
 
+       onFinishProcessInvoice?.invoke(invoiceItems)
     }
 
     fun getInvoiceFrameScope(firebaseText: FirebaseVisionText): Rect {
