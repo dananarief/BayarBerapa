@@ -20,7 +20,6 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="12dp"
             android:scaleType="fitCenter"
-            app:lottie_rawRes="@raw/catplaceholder"
             app:lottie_loop="true"
             app:lottie_autoPlay="true" />
 

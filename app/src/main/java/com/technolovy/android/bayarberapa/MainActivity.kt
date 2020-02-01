@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +26,9 @@ import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import com.technolovy.android.bayarberapa.R.raw.catplaceholder
+import java.io.Serializable
 import java.util.*
+import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
@@ -33,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     var invoiceImageUri: Uri? = null
     private var firebaseAnalytics: FirebaseAnalytics? = null
     lateinit var interstitialAds: InterstitialAd
-    var invoiceItemsResult: MutableMap<Rect, InvoiceItem>? = null
+    var invoiceItemsResult: HashMap<Rect, InvoiceItem>? = null
 
     //loading state
     var isImageLoading: Boolean = false
@@ -166,12 +169,12 @@ class MainActivity : AppCompatActivity() {
         isImageLoading = false
         render()
 
-        invoice?.processText(firebaseText)
-        invoice?.onFinishProcessInvoice = {
-            //Log.d("toast invoice","toast")
-            //Toast.makeText(this,"berhasil di baca", Toast.LENGTH_LONG).show()
-            invoiceItemsResult = it
-        }
+//        invoice?.processText(firebaseText)
+//        invoice?.onFinishProcessInvoice = {
+//            //Log.d("toast invoice","toast")
+//            //Toast.makeText(this,"berhasil di baca", Toast.LENGTH_LONG).show()
+//            invoiceItemsResult = it
+//        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

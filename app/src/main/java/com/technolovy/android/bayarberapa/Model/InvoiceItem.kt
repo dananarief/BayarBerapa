@@ -1,8 +1,11 @@
 package com.technolovy.android.bayarberapa.Model
 
 import android.graphics.Rect
+import android.os.Parcel
+import android.os.Parcelable
+import java.io.Serializable
 
-class InvoiceItem {
+class InvoiceItem() : Serializable, Parcelable {
     var name: String = ""
     var quantity: Double = -1.0
     //if qty is 2, then this is price for 2 items
@@ -13,7 +16,16 @@ class InvoiceItem {
     var type: InvoiceType? = null
     var pricePerUnit: Double = 0.0 //price per qty or per person (for shared fee)
 
-    constructor(rect: Rect, price: Double) {
+    constructor(parcel: Parcel) : this() {
+        name = parcel.readString()
+        quantity = parcel.readDouble()
+        price = parcel.readDouble()
+        rect = parcel.readParcelable(Rect::class.java.classLoader)
+        pricePerUnit = parcel.readDouble()
+        type = InvoiceType.valueOf(parcel.readString()  )
+    }
+
+    constructor(rect: Rect, price: Double) : this() {
         this.rect = rect
         this.price = price
     }
@@ -61,5 +73,28 @@ class InvoiceItem {
         }
 
         return 0.0
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(name)
+        parcel.writeDouble(quantity)
+        parcel.writeDouble(price)
+        parcel.writeParcelable(rect, flags)
+        parcel.writeDouble(pricePerUnit)
+        parcel.writeString(this.type?.name)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<InvoiceItem> {
+        override fun createFromParcel(parcel: Parcel): InvoiceItem {
+            return InvoiceItem(parcel)
+        }
+
+        override fun newArray(size: Int): Array<InvoiceItem?> {
+            return arrayOfNulls(size)
+        }
     }
 }

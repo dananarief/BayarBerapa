@@ -11,7 +11,7 @@ class Grab: InvoiceITF {
     override var invoiceItems: ArrayList<InvoiceItem> = arrayListOf<InvoiceItem>()
     override var firebaseText: FirebaseVisionText? = null
     override var numOfPerson: Double = 1.0
-    override var onFinishProcessInvoice: ((MutableMap<Rect, InvoiceItem>)->Unit)? = null
+    override var onFinishProcessInvoice: ((HashMap<Rect, InvoiceItem>)->Unit)? = null
 
     override fun processText(firebaseText: FirebaseVisionText) {
         //decide frame scope:
@@ -93,8 +93,9 @@ class Grab: InvoiceITF {
 
 
     fun createFrameKeyBasedOnPriceText(firebaseText: FirebaseVisionText,
-                                       frameScope: Rect): MutableMap<Rect, InvoiceItem> {
-        var invoiceItems = mutableMapOf<Rect, InvoiceItem>()
+                                       frameScope: Rect): HashMap<Rect, InvoiceItem> {
+
+        var invoiceItems = hashMapOf<Rect, InvoiceItem>()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
                 for (element in line.elements) {
