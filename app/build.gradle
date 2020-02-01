@@ -46,6 +46,9 @@ dependencies {
 
     //lottie for animations
     implementation 'com.airbnb.android:lottie:3.3.1'
+
+    //recycler view android x
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 }
 
 apply plugin: 'com.google.gms.google-services'
