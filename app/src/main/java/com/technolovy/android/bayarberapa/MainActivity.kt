@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
@@ -21,14 +22,18 @@ import java.io.IOException
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.technolovy.android.bayarberapa.R.raw.catplaceholder
 import java.util.*
-
 
 class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
     var person: Double = 0.0
+    var invoiceImageUri: Uri? = null
     private var firebaseAnalytics: FirebaseAnalytics? = null
     lateinit var interstitialAds: InterstitialAd
+
+    //loading state
+    var isImageLoading: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +107,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun pickImageFromGallery() {
+        isImageLoading = true
+        render()
+
         //Intent to pick Image
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
@@ -149,6 +157,7 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
+        isImageLoading = false
         render()
         invoice?.onFinishProcessInvoice = {
             //Log.d("toast invoice","toast")
@@ -173,9 +182,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            animation_view.setImageURI(data?.data)
-            Log.d("set image","sukses")
 
+            invoiceImageUri = data?.data
+            Log.d("set image","sukses")
+            render()
             //comment when developing to avoid fraud
 //            if (interstitialAds.isLoaded) {
 //                //interstitialAds.show()
@@ -183,23 +193,54 @@ class MainActivity : AppCompatActivity() {
 //                //tracker ads fail to load
 //                Log.d("tracker", "fail to load")
 //            }
+            isImageLoading = true
+            render()
             data?.data?.let { recognizeText(it) }
+        } else {
+            isImageLoading = false
+            render()
         }
     }
 
     /// Render Part
 
     fun render() {
-        renderChooseImageText()
+        renderChooseImageButton()
+        renderImage()
     }
 
-    fun renderChooseImageText() {
-        if (invoice == null) {
+    fun renderChooseImageButton() {
+
+        if (isImageLoading) {
+            button_choose_image.text = "Menunggu Gambar"
+        } else if (invoice == null) {
             Log.d("render button","choose")
             button_choose_image.text = "Pilih Gambar"
         } else {
             Log.d("render button","calculate")
             button_choose_image.text = "Hitung"
+        }
+
+        Log.d("button clickable","${button_choose_image.isClickable} ${button_choose_image.isEnabled}")
+        if (isImageLoading) {
+            button_choose_image.isEnabled = false
+            button_choose_image.setBackgroundColor(ContextCompat.getColor(this,R.color.colorDisabled))
+            button_choose_image.isClickable = false
+        } else {
+            button_choose_image.isEnabled = true
+            button_choose_image.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary))
+            button_choose_image.isClickable = true
+        }
+    }
+
+    fun renderImage() {
+        if ((invoiceImageUri == null) && !isImageLoading) {
+            animation_view.setAnimation(R.raw.catplaceholder)
+        } else if ((invoiceImageUri != null) && isImageLoading) {
+            //loading lottie
+            animation_view.setAnimation(R.raw.loading)
+        } else if (invoiceImageUri != null) {
+            animation_view.setImageURI(invoiceImageUri)
         }
     }
 

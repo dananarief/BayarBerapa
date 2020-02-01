@@ -8,6 +8,7 @@
         tools:context=".MainActivity">
 
     <!--    https://lottiefiles.com/14636-white-cat-->
+<!--    https://lottiefiles.com/197-glow-loading#-->
     <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animation_view"
             app:layout_constraintBottom_toTopOf="@id/place_holder_text"
