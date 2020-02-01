@@ -4,10 +4,8 @@ import android.graphics.Rect
 import android.util.Log
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Helper.extractPriceToDouble
-import com.technolovy.android.bayarberapa.Helper.isPrice
 
 class Grab: InvoiceITF {
-
     override var name: String = "Grab"
     override var slug: String = "grab"
     override var invoiceItems: ArrayList<InvoiceItem> = arrayListOf<InvoiceItem>()

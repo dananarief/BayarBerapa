@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import java.io.IOException
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import com.technolovy.android.bayarberapa.R.raw.catplaceholder
 import java.util.*
 
@@ -31,6 +33,7 @@ class MainActivity : AppCompatActivity() {
     var invoiceImageUri: Uri? = null
     private var firebaseAnalytics: FirebaseAnalytics? = null
     lateinit var interstitialAds: InterstitialAd
+    var invoiceItemsResult: MutableMap<Rect, InvoiceItem>? = null
 
     //loading state
     var isImageLoading: Boolean = false
@@ -80,8 +83,11 @@ class MainActivity : AppCompatActivity() {
 
     fun processButton() {
         Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
-    }
+        val intent = Intent(this, InvoiceListResult::class.java).apply {
 
+        }
+        startActivity(intent)
+    }
     fun chooseButton() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
@@ -159,12 +165,13 @@ class MainActivity : AppCompatActivity() {
 
         isImageLoading = false
         render()
+
+        invoice?.processText(firebaseText)
         invoice?.onFinishProcessInvoice = {
             //Log.d("toast invoice","toast")
             //Toast.makeText(this,"berhasil di baca", Toast.LENGTH_LONG).show()
+            invoiceItemsResult = it
         }
-        //invoice?.processText(firebaseText)
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

@@ -1,6 +1,5 @@
 package com.technolovy.android.bayarberapa.Model
 
-import android.graphics.Point
 import android.graphics.Rect
 
 class InvoiceItem {
