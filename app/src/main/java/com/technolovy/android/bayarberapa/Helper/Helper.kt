@@ -1,5 +1,11 @@
 package com.technolovy.android.bayarberapa.Helper
 
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.LayoutRes
+
 ///*
 // Check if text is price
 // eg: Rp.15.000 -> true
@@ -28,7 +34,7 @@ fun isPrice(text: String): Boolean {
 
 fun extractPriceToDouble(text: String): Double? {
     var checkText = text
-
+    Log.d("check price","${checkText}")
     checkText = checkText.replace("Rp", "")
     checkText = checkText.replace(".", "")
     checkText = checkText.replace(",", "")
@@ -36,4 +42,8 @@ fun extractPriceToDouble(text: String): Double? {
     val price: Double? = checkText.toDoubleOrNull()
 
     return price
+}
+
+fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
+    return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
 }

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">BayarBerapa</string>
+    <string-array name="invoice_type_array">
+        <item>Purchase</item>
+        <item>Discount</item>
+        <item>Tax</item>
+        <item>Shared Fee</item>
+    </string-array>
 </resources>

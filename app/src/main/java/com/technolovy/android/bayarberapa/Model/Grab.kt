@@ -4,8 +4,9 @@ import android.graphics.Rect
 import android.util.Log
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Helper.extractPriceToDouble
+import java.io.Serializable
 
-class Grab: InvoiceITF {
+class Grab: InvoiceITF, Serializable {
     override var name: String = "Grab"
     override var slug: String = "grab"
     override var invoiceItems: ArrayList<InvoiceItem> = arrayListOf<InvoiceItem>()
@@ -122,6 +123,7 @@ class Grab: InvoiceITF {
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
                 for (element in line.elements) {
+                    Log.d("create element", "${element.text} ${element.boundingBox}")
                     element?.boundingBox?.let {
                         var rect = it
                         if (isFrameInsideScope(rect, frameScope)) {
@@ -234,12 +236,16 @@ class Grab: InvoiceITF {
 
     //check if format is 1x, 11x which how grab invoice write quantity in their invoice
     fun extractQuantityTextToDouble(elementText: String): Double? {
+        Log.d("check qty","${elementText}")
         if (elementText.contains("x", ignoreCase = true)) {
             //stripped x
             var strippedText = elementText.replace("x","")
             strippedText = strippedText.replace("X","")
 
             //check if text contains number only after stripped the "x"
+            if (strippedText.equals("T",ignoreCase = false)) {
+                strippedText = "1"
+            }
             return strippedText.toDoubleOrNull()
         }
 

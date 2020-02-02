@@ -8,27 +8,25 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.text.FirebaseVisionText
-import com.technolovy.android.bayarberapa.Model.Grab
-import com.technolovy.android.bayarberapa.Model.InvoiceITF
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.IOException
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.text.FirebaseVisionText
+import com.technolovy.android.bayarberapa.Helper.InvoiceManager
+import com.technolovy.android.bayarberapa.Model.Grab
+import com.technolovy.android.bayarberapa.Model.InvoiceITF
 import com.technolovy.android.bayarberapa.Model.InvoiceItem
-import com.technolovy.android.bayarberapa.R.raw.catplaceholder
-import java.io.Serializable
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.IOException
 import java.util.*
-import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
@@ -36,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     var invoiceImageUri: Uri? = null
     private var firebaseAnalytics: FirebaseAnalytics? = null
     lateinit var interstitialAds: InterstitialAd
-    var invoiceItemsResult: HashMap<Rect, InvoiceItem>? = null
+    var firebaseVisionText: FirebaseVisionText? = null
 
     //loading state
     var isImageLoading: Boolean = false
@@ -86,9 +84,11 @@ class MainActivity : AppCompatActivity() {
 
     fun processButton() {
         Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
-        val intent = Intent(this, InvoiceListResult::class.java).apply {
+        val intent = Intent(this, InvoiceListResult::class.java)
+        invoice?.numOfPerson = person
+        InvoiceManager.invoiceOnScreen = invoice
+        InvoiceManager.firebaseVisionText = firebaseVisionText
 
-        }
         startActivity(intent)
     }
     fun chooseButton() {
@@ -131,6 +131,7 @@ class MainActivity : AppCompatActivity() {
         imgAsFirebaseVisionImage?.let { image ->
             val result = detector.processImage(image)
                 .addOnSuccessListener { firebaseVisionText ->
+                    this.firebaseVisionText = firebaseVisionText
                     setInvoiceBasedOnBrand(firebaseVisionText)
                 }
                 .addOnFailureListener { e ->
