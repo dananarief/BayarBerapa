@@ -4,7 +4,6 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -13,9 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.Helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.Helper.inflate
 import com.technolovy.android.bayarberapa.Model.InvoiceItem
-import kotlinx.android.synthetic.main.invoice_list_item.view.*
+import kotlinx.android.synthetic.main.invoice_list_preview_item.view.*
 
-class InvoiceAdapter(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoiceAdapter.InvoiceHolder>(), AdapterView.OnItemSelectedListener {
+class InvoicePreviewAdaptor(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoicePreviewAdaptor.InvoiceHolder>(), AdapterView.OnItemSelectedListener {
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -26,7 +25,7 @@ class InvoiceAdapter(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Ada
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceHolder {
-        val inflatedView = parent.inflate(R.layout.invoice_list_item, false)
+        val inflatedView = parent.inflate(R.layout.invoice_list_preview_item, false)
         return InvoiceHolder(inflatedView, parent.context)
     }
 

@@ -17,7 +17,7 @@ class InvoiceListPreview : AppCompatActivity() {
     var invoice: InvoiceITF? = null
     var firebaseVisionText: FirebaseVisionText? = null
     var invoiceItemsResult: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
-    private lateinit var invoiceAdapter: InvoiceAdapter
+    private lateinit var invoiceAdapter: InvoicePreviewAdaptor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +87,7 @@ class InvoiceListPreview : AppCompatActivity() {
         Log.d("test view","setup recyclerview")
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
-            invoiceAdapter = InvoiceAdapter(invoiceItemsResult)
+            invoiceAdapter = InvoicePreviewAdaptor(invoiceItemsResult)
             adapter = invoiceAdapter
         }
     }
