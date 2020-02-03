@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,13 +16,11 @@ import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcode
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Helper.InvoiceManager
 import com.technolovy.android.bayarberapa.Model.Grab
 import com.technolovy.android.bayarberapa.Model.InvoiceITF
-import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
@@ -84,7 +81,7 @@ class MainActivity : AppCompatActivity() {
 
     fun processButton() {
         Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
-        val intent = Intent(this, InvoiceListResult::class.java)
+        val intent = Intent(this, InvoiceListPreview::class.java)
         invoice?.numOfPerson = person
         InvoiceManager.invoiceOnScreen = invoice
         InvoiceManager.firebaseVisionText = firebaseVisionText
