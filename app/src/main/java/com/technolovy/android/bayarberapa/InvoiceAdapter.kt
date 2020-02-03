@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.technolovy.android.bayarberapa.Helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.Helper.inflate
 import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_item.view.*
@@ -21,6 +22,7 @@ class InvoiceAdapter(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Ada
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         Log.d("click spinner", "value ${parent?.getItemAtPosition(position)}")
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceHolder {
@@ -35,10 +37,24 @@ class InvoiceAdapter(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Ada
     override fun onBindViewHolder(holder: InvoiceHolder, position: Int) {
         val invoiceItem = invoiceItems[position]
         holder.bindInvoiceItem(invoiceItem)
-        holder.itemView.spinner_invoice_type.onItemSelectedListener = this
-//        holder.itemView.spinner_invoice_type.setOnItemClickListener { parent, view, position, id ->
-//            Log.d("click spinner", "${view.spinner_invoice_type.selectedItem} ${id}")
-//        }
+        holder.itemView.spinner_invoice_type.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val selectedDropdown = parent?.getItemAtPosition(position).toString()
+                val enumBasedOnDropdown = InvoiceItem.InvoiceType.values().firstOrNull() {
+                    it.displayName == selectedDropdown
+                }
+                invoiceItem.type = enumBasedOnDropdown
+            }
+        }
 
         holder.itemView.price_text.addTextChangedListener(object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -51,6 +67,10 @@ class InvoiceAdapter(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Ada
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.d("editTextprice","edit message into ${s}")
+                var priceInDouble = extractPriceToDouble(s.toString())
+                priceInDouble?.let {
+                    invoiceItem.price = it
+                }
             }
 
         })
@@ -66,6 +86,7 @@ class InvoiceAdapter(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Ada
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 Log.d("editTextitem","edit message into ${s}")
+                invoiceItem.name = s.toString()
             }
 
         })
