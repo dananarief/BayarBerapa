@@ -5,6 +5,7 @@ import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Helper.InvoiceManager
@@ -27,6 +28,7 @@ class InvoiceListPreview : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         retrievInfoFromInvoiceManager()
         processTheImage()
+        setupButton()
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -88,7 +90,20 @@ class InvoiceListPreview : AppCompatActivity() {
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
             invoiceAdapter = InvoicePreviewAdaptor(invoiceItemsResult)
+            invoiceAdapter.onTypeChange = { idx, invoiceType ->
+                invoiceItemsResult[idx].type = invoiceType
+                Log.d("changetype","${invoiceItemsResult[idx].type}")
+                setupRecyclerView()
+                adapter?.notifyDataSetChanged()
+            }
             adapter = invoiceAdapter
+
+        }
+    }
+
+    fun setupButton() {
+        button_calculate.setOnClickListener {
+            processButton()
         }
     }
 
@@ -100,5 +115,14 @@ class InvoiceListPreview : AppCompatActivity() {
             }
         }
         return invoiceItemList
+    }
+
+    fun processButton() {
+        Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, InvoiceListResult::class.java)
+        InvoiceManager.invoiceOnScreen = invoice
+        InvoiceManager.firebaseVisionText = firebaseVisionText
+
+        startActivity(intent)
     }
 }

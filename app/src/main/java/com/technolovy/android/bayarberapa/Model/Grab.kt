@@ -201,6 +201,7 @@ class Grab: InvoiceITF, Serializable {
         for ((k, v) in invoiceItems) {
             if (v.type == InvoiceItem.InvoiceType.TAX) {
                 taxPercentage = v.price / subTotal
+                Log.d("taxpercent","${taxPercentage}")
             }
 
             if (v.type == InvoiceItem.InvoiceType.DISCOUNT) {

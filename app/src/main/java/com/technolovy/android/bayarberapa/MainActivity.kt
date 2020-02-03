@@ -27,7 +27,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     var invoice: InvoiceITF? = null
-    var person: Double = 0.0
+    var person: Double = 1.0
     var invoiceImageUri: Uri? = null
     private var firebaseAnalytics: FirebaseAnalytics? = null
     lateinit var interstitialAds: InterstitialAd

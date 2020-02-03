@@ -8,12 +8,12 @@ import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.Helper.inflate
 import com.technolovy.android.bayarberapa.Model.InvoiceItem
-import kotlinx.android.synthetic.main.invoice_list_preview_item.view.*
+import kotlinx.android.synthetic.main.invoice_list_result_item.view.*
 
 class InvoiceResultAdaptor(var invoiceItems:ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoiceResultAdaptor.InvoiceHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceHolder {
         val inflatedView = parent.inflate(R.layout.invoice_list_result_item, false)
-        return InvoiceResultAdaptor.InvoiceHolder(inflatedView, parent.context)
+        return InvoiceHolder(inflatedView, parent.context)
     }
 
     override fun getItemCount(): Int {
@@ -30,8 +30,8 @@ class InvoiceResultAdaptor(var invoiceItems:ArrayList<InvoiceItem>): RecyclerVie
 
         fun bindInvoiceItem(invoiceItem: InvoiceItem) {
             this.item = invoiceItem
-            view.item_text.setText(invoiceItem.name)
-            view.price_text.setText(invoiceItem.pricePerUnit.toString())
+            view.item_text.text = invoiceItem.name
+            view.price_text.text = invoiceItem.pricePerUnit.toString()
         }
     }
 }

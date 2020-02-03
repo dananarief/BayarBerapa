@@ -1,6 +1,7 @@
 package com.technolovy.android.bayarberapa
 
 import android.content.Context
+import android.graphics.Rect
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -15,6 +16,7 @@ import com.technolovy.android.bayarberapa.Model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_preview_item.view.*
 
 class InvoicePreviewAdaptor(var invoiceItems: ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoicePreviewAdaptor.InvoiceHolder>(), AdapterView.OnItemSelectedListener {
+    var onTypeChange: ((Int,InvoiceItem.InvoiceType)->Unit)? = null
     override fun onNothingSelected(parent: AdapterView<*>?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -34,7 +36,7 @@ class InvoicePreviewAdaptor(var invoiceItems: ArrayList<InvoiceItem>): RecyclerV
     }
 
     override fun onBindViewHolder(holder: InvoiceHolder, position: Int) {
-        val invoiceItem = invoiceItems[position]
+        var invoiceItem = invoiceItems[position]
         holder.bindInvoiceItem(invoiceItem)
         holder.itemView.spinner_invoice_type.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -52,6 +54,10 @@ class InvoicePreviewAdaptor(var invoiceItems: ArrayList<InvoiceItem>): RecyclerV
                     it.displayName == selectedDropdown
                 }
                 invoiceItem.type = enumBasedOnDropdown
+                Log.d("dropdown change","into ${invoiceItem.type}")
+                enumBasedOnDropdown?.let {
+                    onTypeChange?.invoke(position,enumBasedOnDropdown)
+                }
             }
         }
 
