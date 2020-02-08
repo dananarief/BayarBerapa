@@ -1,13 +1,11 @@
 package com.technolovy.android.bayarberapa
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.Helper.inflate
-import com.technolovy.android.bayarberapa.Model.InvoiceItem
+import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_result_item.view.*
 
 class InvoiceResultAdaptor(var invoiceItems:ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoiceResultAdaptor.InvoiceHolder>() {

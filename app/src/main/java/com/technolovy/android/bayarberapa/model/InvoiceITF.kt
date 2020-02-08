@@ -1,6 +1,5 @@
-package com.technolovy.android.bayarberapa.Model
+package com.technolovy.android.bayarberapa.model
 
-import android.graphics.Rect
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import java.io.Serializable
 

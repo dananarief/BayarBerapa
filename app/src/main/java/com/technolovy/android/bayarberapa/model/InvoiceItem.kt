@@ -1,4 +1,4 @@
-package com.technolovy.android.bayarberapa.Model
+package com.technolovy.android.bayarberapa.model
 
 import android.graphics.Rect
 import android.os.Parcel

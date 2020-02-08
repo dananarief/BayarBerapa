@@ -1,16 +1,12 @@
 package com.technolovy.android.bayarberapa
 
-import android.graphics.Rect
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Helper.InvoiceManager
-import com.technolovy.android.bayarberapa.Model.InvoiceITF
-import com.technolovy.android.bayarberapa.Model.InvoiceItem
+import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
-import java.util.HashMap
 
 class InvoiceListResult : AppCompatActivity() {
 

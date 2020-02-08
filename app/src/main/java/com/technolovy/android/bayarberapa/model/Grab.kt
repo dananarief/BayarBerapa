@@ -1,4 +1,4 @@
-package com.technolovy.android.bayarberapa.Model
+package com.technolovy.android.bayarberapa.model
 
 import android.graphics.Rect
 import android.util.Log
@@ -48,7 +48,7 @@ class Grab: InvoiceITF, Serializable {
     }
 
     fun getInvoiceFrameScope(firebaseText: FirebaseVisionText): Rect {
-        var frameScope: Rect = Rect()
+        val frameScope: Rect = Rect()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
 

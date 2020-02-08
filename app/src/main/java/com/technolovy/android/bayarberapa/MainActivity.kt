@@ -19,8 +19,8 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.Helper.InvoiceManager
-import com.technolovy.android.bayarberapa.Model.Grab
-import com.technolovy.android.bayarberapa.Model.InvoiceITF
+import com.technolovy.android.bayarberapa.model.Grab
+import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
