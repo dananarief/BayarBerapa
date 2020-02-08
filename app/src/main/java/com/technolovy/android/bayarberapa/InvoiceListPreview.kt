@@ -13,9 +13,9 @@ import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
 
 class InvoiceListPreview : AppCompatActivity() {
-    var invoice: InvoiceITF? = null
-    var firebaseVisionText: FirebaseVisionText? = null
-    var invoiceItemsResult: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
+    private var invoice: InvoiceITF? = null
+    private var firebaseVisionText: FirebaseVisionText? = null
+    private var invoiceItemsResult: ArrayList<InvoiceItem> = ArrayList()
     private lateinit var invoiceAdapter: InvoicePreviewAdaptor
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,10 +29,6 @@ class InvoiceListPreview : AppCompatActivity() {
         setupButton()
     }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-    }
-
     override fun onNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -44,11 +40,11 @@ class InvoiceListPreview : AppCompatActivity() {
     }
 
     fun setDataDummy() {
-        val invoice1: InvoiceItem = InvoiceItem()
+        val invoice1= InvoiceItem()
         invoice1.name = "ayam"
         invoice1.pricePerUnit = 1000.0
 
-        val invoice2: InvoiceItem = InvoiceItem()
+        val invoice2 = InvoiceItem()
         invoice2.name = "bebek"
         invoice2.pricePerUnit = 15000.0
 
@@ -61,12 +57,12 @@ class InvoiceListPreview : AppCompatActivity() {
         )
     }
 
-    fun retrievInfoFromInvoiceManager() {
+    private fun retrievInfoFromInvoiceManager() {
         invoice = InvoiceManager.invoiceOnScreen
         firebaseVisionText = InvoiceManager.firebaseVisionText
     }
 
-    fun processTheImage() {
+    private fun processTheImage() {
         Log.d("test view","start")
         invoice?.onFinishProcessInvoice = {
             invoiceItemsResult = it
@@ -81,7 +77,7 @@ class InvoiceListPreview : AppCompatActivity() {
         }
     }
 
-    fun setupRecyclerView() {
+    private fun setupRecyclerView() {
         Log.d("test view","setup recyclerview")
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
@@ -90,13 +86,13 @@ class InvoiceListPreview : AppCompatActivity() {
         }
     }
 
-    fun setupButton() {
+    private fun setupButton() {
         button_calculate.setOnClickListener {
             processButton()
         }
     }
 
-    fun processButton() {
+    private fun processButton() {
         Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
         val intent = Intent(this, InvoiceListResult::class.java)
         InvoiceManager.invoiceOnScreen = invoice
