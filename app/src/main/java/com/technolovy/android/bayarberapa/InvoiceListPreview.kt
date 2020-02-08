@@ -3,7 +3,6 @@ package com.technolovy.android.bayarberapa
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -63,11 +62,8 @@ class InvoiceListPreview : AppCompatActivity() {
     }
 
     private fun processTheImage() {
-        Log.d("test view","start")
         invoice?.onFinishProcessInvoice = {
             invoiceItemsResult = it
-            Log.d("tests view", "${invoiceItemsResult.count()}")
-            Log.d("test view","end")
             setupRecyclerView()
             invoiceAdapter.notifyDataSetChanged()
         }
@@ -78,7 +74,6 @@ class InvoiceListPreview : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        Log.d("test view","setup recyclerview")
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
             invoiceAdapter = InvoicePreviewAdaptor(invoiceItemsResult)

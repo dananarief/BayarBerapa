@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
 
 class InvoiceListResult : AppCompatActivity() {
 
-    var invoice: InvoiceITF? = null
+    private var invoice: InvoiceITF? = null
     private lateinit var invoiceAdapter: InvoiceResultAdaptor
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,12 +28,11 @@ class InvoiceListResult : AppCompatActivity() {
         return true
     }
 
-    fun retrievInfoFromInvoiceManager() {
+    private fun retrievInfoFromInvoiceManager() {
         invoice = InvoiceManager.invoiceOnScreen
-        Log.d("pageinvoice","count ${invoice?.numOfPerson}")
     }
 
-    fun processTheImage() {
+    private fun processTheImage() {
         Log.d("test view","start")
         invoice?.invoiceItems?.let {
             invoice?.calculate(it)
@@ -43,7 +42,7 @@ class InvoiceListResult : AppCompatActivity() {
         }
     }
 
-    fun setupRecyclerView() {
+    private fun setupRecyclerView() {
         Log.d("test view","setup recyclerview")
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
