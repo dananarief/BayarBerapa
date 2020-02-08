@@ -8,10 +8,10 @@ import com.technolovy.android.bayarberapa.helper.inflate
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_result_item.view.*
 
-class InvoiceResultAdaptor(var invoiceItems:ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoiceResultAdaptor.InvoiceHolder>() {
+class InvoiceResultAdaptor(private var invoiceItems:ArrayList<InvoiceItem>): RecyclerView.Adapter<InvoiceResultAdaptor.InvoiceHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceHolder {
         val inflatedView = parent.inflate(R.layout.invoice_list_result_item, false)
-        return InvoiceHolder(inflatedView, parent.context)
+        return InvoiceHolder(inflatedView)
     }
 
     override fun getItemCount(): Int {
@@ -23,7 +23,7 @@ class InvoiceResultAdaptor(var invoiceItems:ArrayList<InvoiceItem>): RecyclerVie
         holder.bindInvoiceItem(invoiceItem)
     }
 
-    class InvoiceHolder(private var view: View, var context: Context): RecyclerView.ViewHolder(view) {
+    class InvoiceHolder(private var view: View): RecyclerView.ViewHolder(view) {
         private var item: InvoiceItem? = null
 
         fun bindInvoiceItem(invoiceItem: InvoiceItem) {
