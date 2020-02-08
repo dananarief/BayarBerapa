@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
 import com.technolovy.android.bayarberapa.model.InvoiceITF
+import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
 
 class InvoiceListResult : AppCompatActivity() {
@@ -47,7 +48,11 @@ class InvoiceListResult : AppCompatActivity() {
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
             invoice?.invoiceItems?.let {
-                invoiceAdapter = InvoiceResultAdaptor(it)
+                val filteredInvoiceItems = it.filter {
+                    it.type == InvoiceItem.InvoiceType.PURCHASEITEM
+                            || it.type == InvoiceItem.InvoiceType.SHARED_FEE
+                }
+                invoiceAdapter = InvoiceResultAdaptor(filteredInvoiceItems)
                 adapter = invoiceAdapter
             }
         }

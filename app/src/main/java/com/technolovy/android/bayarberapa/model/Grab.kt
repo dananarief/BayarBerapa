@@ -180,6 +180,10 @@ class Grab: InvoiceITF, Serializable {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
+            } else if (v.name.contains("subtotal", ignoreCase = true)) {
+                v.type = InvoiceItem.InvoiceType.SUBTOTAL
+            }else {
+                v.type = InvoiceItem.InvoiceType.NOTRECOGNIZED
             }
         }
     }

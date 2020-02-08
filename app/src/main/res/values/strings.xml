@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">BayarBerapa</string>
     <string-array name="invoice_type_array">
+        <item>Not Recognized</item>
         <item>Purchase</item>
         <item>Discount</item>
         <item>Tax</item>
         <item>Shared Fee</item>
+        <item>Subtotal</item>
     </string-array>
     <string name="waiting_pict_button">Menunggu Gambar</string>
     <string name="choose_pict_button">Pilih Gambar</string>

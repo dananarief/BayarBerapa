@@ -3,6 +3,7 @@ package com.technolovy.android.bayarberapa
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -88,11 +89,33 @@ class InvoiceListPreview : AppCompatActivity() {
     }
 
     private fun processButton() {
-        Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
-        val intent = Intent(this, InvoiceListResult::class.java)
-        InvoiceManager.invoiceOnScreen = invoice
-        InvoiceManager.firebaseVisionText = firebaseVisionText
+        if (isListValid()) {
+            val intent = Intent(this, InvoiceListResult::class.java)
+            InvoiceManager.invoiceOnScreen = invoice
+            InvoiceManager.firebaseVisionText = firebaseVisionText
 
-        startActivity(intent)
+            startActivity(intent)
+        }
+    }
+
+    private fun isListValid(): Boolean {
+        var isValid: Boolean = false
+        invoice?.invoiceItems?.let {
+            isValid = true
+            for (item in it) {
+                if (item.name.isEmpty()) {
+                    Log.d("valid","ada yang gak valid nama")
+                    Toast.makeText(this, "Terdapat nama item yang kosong", Toast.LENGTH_LONG).show()
+                    return false
+                }
+
+                if (item.type == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
+                    Log.d("valid","ada yang gak valid tipe")
+                    Toast.makeText(this, "Terdapat tipe item yang kosong", Toast.LENGTH_LONG).show()
+                    return false
+                }
+            }
+        }
+        return isValid
     }
 }

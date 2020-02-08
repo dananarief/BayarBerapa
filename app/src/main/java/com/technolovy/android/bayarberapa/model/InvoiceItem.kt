@@ -31,10 +31,12 @@ class InvoiceItem() : Serializable, Parcelable {
     }
 
     enum class InvoiceType(val displayName: String) {
+        NOTRECOGNIZED("Not Recognized"),
         PURCHASEITEM("Purchase"), //foods, drink, any item that user buy
         DISCOUNT("Discount"), //reduction for each purchase item
         TAX("Tax"), //the tax addition for each purchase item
-        SHARED_FEE("Shared Fee") // service charged by restaurant or delivery fee
+        SHARED_FEE("Shared Fee"), // service charged by restaurant or delivery fee
+        SUBTOTAL("Subtotal") // subtotal of purchase item
     }
 
     fun getPriceForDebug(): Double {
