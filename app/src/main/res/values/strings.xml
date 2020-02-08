@@ -6,4 +6,7 @@
         <item>Tax</item>
         <item>Shared Fee</item>
     </string-array>
+    <string name="waiting_pict_button">Menunggu Gambar</string>
+    <string name="choose_pict_button">Pilih Gambar</string>
+    <string name="calculate_button">Hitung</string>
 </resources>
