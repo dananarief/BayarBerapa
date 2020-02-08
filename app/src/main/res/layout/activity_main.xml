@@ -8,6 +8,7 @@
         tools:context=".MainActivity">
 
     <!--    https://lottiefiles.com/14636-white-cat-->
+<!--    https://lottiefiles.com/197-glow-loading#-->
     <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/animation_view"
             app:layout_constraintBottom_toTopOf="@id/place_holder_text"
@@ -19,7 +20,6 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="12dp"
             android:scaleType="fitCenter"
-            app:lottie_rawRes="@raw/catplaceholder"
             app:lottie_loop="true"
             app:lottie_autoPlay="true" />
 

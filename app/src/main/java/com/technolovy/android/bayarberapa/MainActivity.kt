@@ -10,25 +10,31 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
-import com.technolovy.android.bayarberapa.Model.Grab
-import com.technolovy.android.bayarberapa.Model.InvoiceITF
+import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.model.Grab
+import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
 import java.util.*
 
-
 class MainActivity : AppCompatActivity() {
-    var invoice: InvoiceITF? = null
-    var person: Double = 0.0
+    private var invoice: InvoiceITF? = null
+    private var person: Double = 1.0
+    private var invoiceImageUri: Uri? = null
     private var firebaseAnalytics: FirebaseAnalytics? = null
-    lateinit var interstitialAds: InterstitialAd
+    private lateinit var interstitialAds: InterstitialAd
+    private var firebaseVisionText: FirebaseVisionText? = null
+
+    //loading state
+    private var isImageLoading: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         render()
     }
 
+    //always comment this function when debugging
     fun setMobsAds() {
         MobileAds.initialize(this, "ca-app-pub-8342384986875866~7993633723")
         interstitialAds = InterstitialAd(this)
@@ -51,18 +58,15 @@ class MainActivity : AppCompatActivity() {
         interstitialAds.loadAd(AdRequest.Builder().build())
     }
 
-    fun testSentTracker() {
-        var bundle = Bundle()
-        val currentTime = Calendar.getInstance().getTime()
+    private fun testSentTracker() {
+        val bundle = Bundle()
+        val currentTime = Calendar.getInstance().time
         bundle.putString("click_time", currentTime.toString())
         bundle.putString("app_version", "0.1")
         firebaseAnalytics?.logEvent("choose_image",bundle)
-        if (firebaseAnalytics != null) {
-            Log.d("firebaseAnalytics","logged")
-        }
     }
 
-    fun setButtonListener() {
+    private fun setButtonListener() {
         button_choose_image.setOnClickListener {
             testSentTracker()
             if (invoice == null) {
@@ -73,11 +77,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun processButton() {
+    private fun processButton() {
         Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, InvoiceListPreview::class.java)
+        invoice?.numOfPerson = person
+        InvoiceManager.invoiceOnScreen = invoice
+        InvoiceManager.firebaseVisionText = firebaseVisionText
+
+        startActivity(intent)
     }
 
-    fun chooseButton() {
+    private fun chooseButton() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 //permission denied
@@ -94,26 +104,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setPersonQtyPicker() {
-        number_picker.setOnValueChangedListener { picker, oldVal, newVal ->
-            Log.d("number picker", "${picker.value}")
+    private fun setPersonQtyPicker() {
+        number_picker.setOnValueChangedListener { picker, _, _ ->
             person = picker.value.toDouble()
         }
     }
 
     private fun pickImageFromGallery() {
+        isImageLoading = true
+        render()
+
         //Intent to pick Image
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         startActivityForResult(intent, IMAGE_PICK_CODE)
     }
 
-    fun recognizeText(imgUri: Uri) {
+    private fun recognizeText(imgUri: Uri) {
         val detector = FirebaseVision.getInstance().onDeviceTextRecognizer
         val imgAsFirebaseVisionImage = getFirebaseVisionImageFromUri(imgUri)
         imgAsFirebaseVisionImage?.let { image ->
-            val result = detector.processImage(image)
+            detector.processImage(image)
                 .addOnSuccessListener { firebaseVisionText ->
+                    this.firebaseVisionText = firebaseVisionText
                     setInvoiceBasedOnBrand(firebaseVisionText)
                 }
                 .addOnFailureListener { e ->
@@ -126,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun getFirebaseVisionImageFromUri(imgUri: Uri): FirebaseVisionImage? {
+    private fun getFirebaseVisionImageFromUri(imgUri: Uri): FirebaseVisionImage? {
         var image: FirebaseVisionImage? = null
         try {
             image = FirebaseVisionImage.fromFilePath(this, imgUri)
@@ -136,12 +149,13 @@ class MainActivity : AppCompatActivity() {
         return image
     }
 
-    fun setInvoiceBasedOnBrand(firebaseText: FirebaseVisionText) {
+    private fun setInvoiceBasedOnBrand(firebaseText: FirebaseVisionText) {
         // todo: should be added loading here
         if (firebaseText.text.contains("order summary", ignoreCase = true)) {
             invoice = Grab()
         } else if (firebaseText.text.contains("gojek", ignoreCase = true)) {
             //todo: init gojek
+            //implement later
         } else {
             Toast.makeText(
                 this,
@@ -149,19 +163,14 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
+        isImageLoading = false
         render()
-        invoice?.onFinishProcessInvoice = {
-            //Log.d("toast invoice","toast")
-            //Toast.makeText(this,"berhasil di baca", Toast.LENGTH_LONG).show()
-        }
-        //invoice?.processText(firebaseText)
-
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode) {
             PERMISSION_CODE -> {
-                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission from popup granted
                     pickImageFromGallery()
                 } else {
@@ -173,9 +182,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            animation_view.setImageURI(data?.data)
-            Log.d("set image","sukses")
 
+            invoiceImageUri = data?.data
+            render()
             //comment when developing to avoid fraud
 //            if (interstitialAds.isLoaded) {
 //                //interstitialAds.show()
@@ -183,29 +192,54 @@ class MainActivity : AppCompatActivity() {
 //                //tracker ads fail to load
 //                Log.d("tracker", "fail to load")
 //            }
+            isImageLoading = true
+            render()
             data?.data?.let { recognizeText(it) }
+        } else {
+            isImageLoading = false
+            render()
         }
     }
 
     /// Render Part
-
-    fun render() {
-        renderChooseImageText()
+    private fun render() {
+        renderChooseImageButton()
+        renderImage()
     }
 
-    fun renderChooseImageText() {
-        if (invoice == null) {
-            Log.d("render button","choose")
-            button_choose_image.text = "Pilih Gambar"
+    private fun renderChooseImageButton() {
+        if (isImageLoading) {
+            button_choose_image.text = getString(R.string.waiting_pict_button)
+        } else if (invoice == null) {
+            button_choose_image.text = getString(R.string.choose_pict_button)
         } else {
-            Log.d("render button","calculate")
-            button_choose_image.text = "Hitung"
+            button_choose_image.text = getString(R.string.calculate_button)
+        }
+
+        if (isImageLoading) {
+            button_choose_image.isEnabled = false
+            button_choose_image.setBackgroundColor(ContextCompat.getColor(this,R.color.colorDisabled))
+            button_choose_image.isClickable = false
+        } else {
+            button_choose_image.isEnabled = true
+            button_choose_image.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary))
+            button_choose_image.isClickable = true
         }
     }
 
+    private fun renderImage() {
+        if ((invoiceImageUri == null) && !isImageLoading) {
+            animation_view.setAnimation(R.raw.catplaceholder)
+        } else if ((invoiceImageUri != null) && isImageLoading) {
+            //loading lottie
+            animation_view.setAnimation(R.raw.loading)
+        } else if (invoiceImageUri != null) {
+            animation_view.setImageURI(invoiceImageUri)
+        }
+    }
 
     companion object {
-        private val IMAGE_PICK_CODE = 1000
-        private val PERMISSION_CODE = 1001
+        private const val IMAGE_PICK_CODE = 1000
+        private const val PERMISSION_CODE = 1001
     }
 }
