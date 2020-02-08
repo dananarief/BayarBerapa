@@ -15,8 +15,6 @@ import java.util.HashMap
 class InvoiceListResult : AppCompatActivity() {
 
     var invoice: InvoiceITF? = null
-    var firebaseVisionText: FirebaseVisionText? = null
-    var invoiceItemsResult: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
     private lateinit var invoiceAdapter: InvoiceResultAdaptor
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,27 +32,18 @@ class InvoiceListResult : AppCompatActivity() {
         return true
     }
 
-
     fun retrievInfoFromInvoiceManager() {
         invoice = InvoiceManager.invoiceOnScreen
-        firebaseVisionText = InvoiceManager.firebaseVisionText
         Log.d("pageinvoice","count ${invoice?.numOfPerson}")
     }
 
     fun processTheImage() {
         Log.d("test view","start")
-        invoice?.onFinishProcessInvoice = {
-            invoiceItemsResult = convertHashMapToList(it)
-            Log.d("tests view", "${invoiceItemsResult.count()}")
-            Log.d("test view","end")
+        invoice?.invoiceItems?.let {
+            invoice?.calculate(it)
             setupRecyclerView()
             invoiceAdapter.notifyDataSetChanged()
-            //invoiceAdapter.notifyDataSetChanged()
-        }
-
-        firebaseVisionText?.let {
-            invoice?.processText(it)
-
+            Log.d("test view","done calculate")
         }
     }
 
@@ -62,18 +51,10 @@ class InvoiceListResult : AppCompatActivity() {
         Log.d("test view","setup recyclerview")
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
-            invoiceAdapter = InvoiceResultAdaptor(invoiceItemsResult)
-            adapter = invoiceAdapter
-        }
-    }
-
-    fun convertHashMapToList(hashMapData: HashMap<Rect, InvoiceItem>?): ArrayList<InvoiceItem> {
-        val invoiceItemList: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
-        hashMapData?.let {
-            for ((k, v) in it) {
-                invoiceItemList.add(v)
+            invoice?.invoiceItems?.let {
+                invoiceAdapter = InvoiceResultAdaptor(it)
+                adapter = invoiceAdapter
             }
         }
-        return invoiceItemList
     }
 }

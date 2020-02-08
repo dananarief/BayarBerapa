@@ -71,17 +71,15 @@ class InvoiceListPreview : AppCompatActivity() {
     fun processTheImage() {
         Log.d("test view","start")
         invoice?.onFinishProcessInvoice = {
-            invoiceItemsResult = convertHashMapToList(it)
+            invoiceItemsResult = it
             Log.d("tests view", "${invoiceItemsResult.count()}")
             Log.d("test view","end")
             setupRecyclerView()
             invoiceAdapter.notifyDataSetChanged()
-            //invoiceAdapter.notifyDataSetChanged()
         }
 
         firebaseVisionText?.let {
             invoice?.processText(it)
-
         }
     }
 
@@ -90,14 +88,7 @@ class InvoiceListPreview : AppCompatActivity() {
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
             invoiceAdapter = InvoicePreviewAdaptor(invoiceItemsResult)
-            invoiceAdapter.onTypeChange = { idx, invoiceType ->
-                invoiceItemsResult[idx].type = invoiceType
-                Log.d("changetype","${invoiceItemsResult[idx].type}")
-                setupRecyclerView()
-                adapter?.notifyDataSetChanged()
-            }
             adapter = invoiceAdapter
-
         }
     }
 
@@ -105,16 +96,6 @@ class InvoiceListPreview : AppCompatActivity() {
         button_calculate.setOnClickListener {
             processButton()
         }
-    }
-
-    fun convertHashMapToList(hashMapData: HashMap<Rect, InvoiceItem>?): ArrayList<InvoiceItem> {
-        val invoiceItemList: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
-        hashMapData?.let {
-            for ((k, v) in it) {
-                invoiceItemList.add(v)
-            }
-        }
-        return invoiceItemList
     }
 
     fun processButton() {

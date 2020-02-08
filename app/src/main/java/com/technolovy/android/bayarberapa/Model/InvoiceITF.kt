@@ -11,7 +11,8 @@ interface InvoiceITF: Serializable {
     var invoiceItems: ArrayList<InvoiceItem>
     var firebaseText: FirebaseVisionText?
     var numOfPerson: Double
-    var onFinishProcessInvoice: ((HashMap<Rect, InvoiceItem>)->Unit)?
+    var onFinishProcessInvoice: ((ArrayList<InvoiceItem>)->Unit)?
 
     fun processText(firebaseText: FirebaseVisionText)
+    fun calculate(invoiceItems: ArrayList<InvoiceItem>): ArrayList<InvoiceItem>
 }
