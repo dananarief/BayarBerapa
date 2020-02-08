@@ -61,9 +61,9 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                 }
 
                 if (invoiceItem.type == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
-                    view?.spinner_item?.setTextColor(ContextCompat.getColor(holder.context,R.color.colorPrimary))
-                } else {
                     view?.spinner_item?.setTextColor(ContextCompat.getColor(holder.context,R.color.colorAccent))
+                } else {
+                    view?.spinner_item?.setTextColor(ContextCompat.getColor(holder.context,R.color.colorPrimary))
                 }
 
                 //(parent?.getChildAt(position) as TextView).setTextColor(ContextCompat.getColor(holder.context,R.color.colorDisabled))
