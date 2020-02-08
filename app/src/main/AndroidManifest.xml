@@ -11,8 +11,12 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".InvoiceListResult"
-                android:parentActivityName=".InvoiceListPreview" ></activity>
+        <activity
+                android:name=".TagPeople"
+                android:parentActivityName=".InvoiceListResult" ></activity>
+        <activity
+                android:name=".InvoiceListResult"
+                android:parentActivityName=".InvoiceListPreview" />
         <activity
                 android:name=".InvoiceListPreview"
                 android:parentActivityName=".MainActivity" />
