@@ -1,4 +1,4 @@
-package com.technolovy.android.bayarberapa.Helper
+package com.technolovy.android.bayarberapa.helper
 
 import android.util.Log
 import android.view.LayoutInflater

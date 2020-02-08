@@ -1,4 +1,4 @@
-package com.technolovy.android.bayarberapa.Helper
+package com.technolovy.android.bayarberapa.helper
 
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.model.InvoiceITF

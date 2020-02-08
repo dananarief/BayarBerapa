@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.technolovy.android.bayarberapa.Helper.extractPriceToDouble
-import com.technolovy.android.bayarberapa.Helper.inflate
+import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
+import com.technolovy.android.bayarberapa.helper.inflate
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_preview_item.view.*
 

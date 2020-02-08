@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.technolovy.android.bayarberapa.Helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.InvoiceManager
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
 

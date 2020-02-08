@@ -3,7 +3,7 @@ package com.technolovy.android.bayarberapa.model
 import android.graphics.Rect
 import android.util.Log
 import com.google.firebase.ml.vision.text.FirebaseVisionText
-import com.technolovy.android.bayarberapa.Helper.extractPriceToDouble
+import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import java.io.Serializable
 
 class Grab: InvoiceITF, Serializable {

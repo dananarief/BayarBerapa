@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.technolovy.android.bayarberapa.Helper.inflate
+import com.technolovy.android.bayarberapa.helper.inflate
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_result_item.view.*
 
