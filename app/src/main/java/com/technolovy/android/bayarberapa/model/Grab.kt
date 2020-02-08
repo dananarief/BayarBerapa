@@ -5,11 +5,12 @@ import android.util.Log
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import java.io.Serializable
+import kotlin.math.abs
 
 class Grab: InvoiceITF, Serializable {
     override var name: String = "Grab"
     override var slug: String = "grab"
-    override var invoiceItems: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
+    override var invoiceItems: ArrayList<InvoiceItem> = ArrayList()
     override var firebaseText: FirebaseVisionText? = null
     override var numOfPerson: Double = 1.0
     override var onFinishProcessInvoice: ((ArrayList<InvoiceItem>)->Unit)? = null
@@ -37,18 +38,18 @@ class Grab: InvoiceITF, Serializable {
         onFinishProcessInvoice?.invoke(result)
     }
 
-    fun convertHashMapToList(hashMapData: java.util.HashMap<Rect, InvoiceItem>?): ArrayList<InvoiceItem> {
-        val invoiceItemList: ArrayList<InvoiceItem> = ArrayList<InvoiceItem>()
+    private fun convertHashMapToList(hashMapData: java.util.HashMap<Rect, InvoiceItem>?): ArrayList<InvoiceItem> {
+        val invoiceItemList: ArrayList<InvoiceItem> = ArrayList()
         hashMapData?.let {
-            for ((k, v) in it) {
+            for ((_, v) in it) {
                 invoiceItemList.add(v)
             }
         }
         return invoiceItemList
     }
 
-    fun getInvoiceFrameScope(firebaseText: FirebaseVisionText): Rect {
-        val frameScope: Rect = Rect()
+    private fun getInvoiceFrameScope(firebaseText: FirebaseVisionText): Rect {
+        val frameScope = Rect()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
 
@@ -71,7 +72,7 @@ class Grab: InvoiceITF, Serializable {
     }
 
     fun getPurchaseItemTypeFrameScope(firebaseText: FirebaseVisionText): Rect {
-        var frameScope: Rect = Rect()
+        val frameScope = Rect()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
 
@@ -93,21 +94,20 @@ class Grab: InvoiceITF, Serializable {
         return frameScope
     }
 
-    fun createFrameKeyBasedOnPriceText(firebaseText: FirebaseVisionText,
+    private fun createFrameKeyBasedOnPriceText(firebaseText: FirebaseVisionText,
                                        frameScope: Rect): HashMap<Rect, InvoiceItem> {
 
-        var invoiceItems = hashMapOf<Rect, InvoiceItem>()
+        val invoiceItems = hashMapOf<Rect, InvoiceItem>()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
                 for (element in line.elements) {
                     element?.boundingBox?.let {
-                        var rect = it
+                        val rect = it
                         if (isFrameInsideScope(rect, frameScope)) {
-                            var priceWithDoubleFormat = extractPriceToDouble(element.text)
-                            priceWithDoubleFormat?.let {
+                            val priceWithDoubleFormat = extractPriceToDouble(element.text)
+                            priceWithDoubleFormat?.let { doublePrice ->
                                 //if the text is price, save the frame as key to the map
-                                var price = it
-                                invoiceItems[rect] = InvoiceItem(rect, price)
+                                invoiceItems[rect] = InvoiceItem(rect, doublePrice)
                             }
                         }
                     }
@@ -117,7 +117,7 @@ class Grab: InvoiceITF, Serializable {
         return invoiceItems
     }
 
-    fun fillAttributesForInvoiceItems(firebaseText: FirebaseVisionText,
+    private fun fillAttributesForInvoiceItems(firebaseText: FirebaseVisionText,
                                       frameScope: Rect,
                                       invoiceItems: MutableMap<Rect, InvoiceItem>) {
         for (block in firebaseText.textBlocks) {
@@ -125,14 +125,14 @@ class Grab: InvoiceITF, Serializable {
                 for (element in line.elements) {
                     Log.d("create element", "${element.text} ${element.boundingBox}")
                     element?.boundingBox?.let {
-                        var rect = it
+                        val rect = it
                         if (isFrameInsideScope(rect, frameScope)) {
-                            var qtyWithDoubleFormat = extractQuantityTextToDouble(element.text)
+                            val qtyWithDoubleFormat = extractQuantityTextToDouble(element.text)
                             qtyWithDoubleFormat?.let {
                                 //assign the qty for the key
-                                for ((k, v) in invoiceItems) {
+                                for ((k, _) in invoiceItems) {
                                     if (isFrameConsideredAsOneLine(rect,k)) {
-                                        var invoiceItem = invoiceItems[k]
+                                        val invoiceItem = invoiceItems[k]
                                         invoiceItem?.quantity = qtyWithDoubleFormat
                                     }
                                 }
@@ -144,20 +144,20 @@ class Grab: InvoiceITF, Serializable {
         }
     }
 
-    fun fillNamesForInvoiceItems(firebaseText: FirebaseVisionText,
+    private fun fillNamesForInvoiceItems(firebaseText: FirebaseVisionText,
                                  frameScope: Rect,
                                  invoiceItems: MutableMap<Rect, InvoiceItem>) {
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
                 line.boundingBox?.let {
-                    var rect = it
+                    val rect = it
 
                     if (isFrameInsideScope(rect, frameScope)) {
-                        for ((k, v) in invoiceItems) {
+                        for ((k, _) in invoiceItems) {
                             if (isFrameConsideredAsOneLine(rect,k)) {
                                 //make sure the text is not qty or price
                                 if (extractPriceToDouble(line.text) == null && (extractQuantityTextToDouble(line.text) == null)) {
-                                    var invoiceItem = invoiceItems[k]
+                                    val invoiceItem = invoiceItems[k]
                                     invoiceItem?.name = line.text
                                 }
                             }
@@ -168,8 +168,8 @@ class Grab: InvoiceITF, Serializable {
         }
     }
 
-    fun fillTypeForInvoiceItems(invoiceItems: MutableMap<Rect, InvoiceItem>) {
-        for ((k, v) in invoiceItems) {
+    private fun fillTypeForInvoiceItems(invoiceItems: MutableMap<Rect, InvoiceItem>) {
+        for ((_, v) in invoiceItems) {
             if (v.quantity > 0) {
                 v.type = InvoiceItem.InvoiceType.PURCHASEITEM
             } else if (v.name.contains("Promo",ignoreCase = true)) {
@@ -186,9 +186,9 @@ class Grab: InvoiceITF, Serializable {
 
     override fun calculate(invoiceItems: ArrayList<InvoiceItem>): ArrayList<InvoiceItem> {
         //will set invoice item pricePerUnit attribute
-        var subTotal: Double = 0.0
-        var taxPercentage: Double = 0.0
-        var discountPercentage: Double = 0.0
+        var subTotal = 0.0
+        var taxPercentage = 0.0
+        var discountPercentage = 0.0
 
         //get info about subtotal
         for (invoiceItem in invoiceItems) {
@@ -201,11 +201,11 @@ class Grab: InvoiceITF, Serializable {
         for (invoiceItem in invoiceItems) {
             if (invoiceItem.type == InvoiceItem.InvoiceType.TAX) {
                 taxPercentage = invoiceItem.price / subTotal
-                Log.d("taxpercent","${taxPercentage}")
+                Log.d("taxpercent","a${taxPercentage}")
             }
 
             if (invoiceItem.type == InvoiceItem.InvoiceType.DISCOUNT) {
-                discountPercentage = Math.abs(invoiceItem.price) / subTotal
+                discountPercentage = abs(invoiceItem.price) / subTotal
             }
         }
 
@@ -240,13 +240,13 @@ class Grab: InvoiceITF, Serializable {
         return invoiceItems
     }
 
-    fun isFrameInsideScope(frameToCheck: Rect, frameScope: Rect): Boolean {
+    private fun isFrameInsideScope(frameToCheck: Rect, frameScope: Rect): Boolean {
         return (frameToCheck.top > frameScope.top) && (frameToCheck.bottom < frameScope.bottom)
     }
 
     //check if format is 1x, 11x which how grab invoice write quantity in their invoice
-    fun extractQuantityTextToDouble(elementText: String): Double? {
-        Log.d("check qty","${elementText}")
+    private fun extractQuantityTextToDouble(elementText: String): Double? {
+        Log.d("check qty",elementText)
         if (elementText.contains("x", ignoreCase = true)) {
             //stripped x
             var strippedText = elementText.replace("x","")
@@ -262,9 +262,9 @@ class Grab: InvoiceITF, Serializable {
         return null
     }
 
-    fun isFrameConsideredAsOneLine(frame1: Rect, frame2: Rect): Boolean {
+    private fun isFrameConsideredAsOneLine(frame1: Rect, frame2: Rect): Boolean {
         var diffTop = frame1.top - frame2.top
-        diffTop = Math.abs(diffTop)
+        diffTop = abs(diffTop)
         return diffTop < 15
     }
 }
