@@ -1,5 +1,6 @@
 package com.technolovy.android.bayarberapa
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,9 @@ class TagPeopleListAdaptor(private var recipients:List<Recipient>): RecyclerView
     override fun onBindViewHolder(holder: TagPeopleListHolder, position: Int) {
         val recipients = recipients[position]
         holder.bindRecipientItem(recipients)
+        holder.itemView.edit_text.setOnClickListener {
+            Log.d("edittext","logged")
+        }
     }
 
     class TagPeopleListHolder(private var view: View): RecyclerView.ViewHolder(view) {

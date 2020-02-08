@@ -1,25 +1,25 @@
 package com.technolovy.android.bayarberapa
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.technolovy.android.bayarberapa.helper.InvoiceManager
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import com.technolovy.android.bayarberapa.model.Recipient
-import kotlinx.android.synthetic.main.activity_invoice_list_result.*
+import kotlinx.android.synthetic.main.activity_add_recepient_form.*
+import kotlinx.android.synthetic.main.activity_add_recepient_form.recycler_view
+import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
 import kotlinx.android.synthetic.main.activity_tag_people.*
-import kotlinx.android.synthetic.main.activity_tag_people.recycler_view
 
-class TagPeople : AppCompatActivity() {
-    private lateinit var recipientAdapter: TagPeopleListAdaptor
+class AddRecepientForm : AppCompatActivity() {
+    private lateinit var recipientOrderAdapter: RecipientOrderAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_tag_people)
+        setContentView(R.layout.activity_add_recepient_form)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        setupRecyclerView()
-        setupButton()
+        setupAutoCompleteTextView()
+        setupRecylerView()
     }
 
     override fun onNavigateUp(): Boolean {
@@ -27,7 +27,16 @@ class TagPeople : AppCompatActivity() {
         return true
     }
 
-    private fun setupRecyclerView() {
+    private fun setupAutoCompleteTextView() {
+        var sugestion = ArrayList<String>()
+        sugestion.add("aldo")
+        sugestion.add("anis")
+        var adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,sugestion)
+        autoCompleteTextView.setAdapter(adapter)
+        autoCompleteTextView.threshold = 1
+    }
+
+    private fun setupRecylerView() {
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)
             var dummyRecipient = Recipient()
@@ -45,17 +54,10 @@ class TagPeople : AppCompatActivity() {
             var dummyRecipientList = ArrayList<Recipient>()
             dummyRecipientList.add(dummyRecipient)
 
-            recipientAdapter = TagPeopleListAdaptor(dummyRecipientList)
+            recipientOrderAdapter = RecipientOrderAdapter(dummyInvoiceListItem)
             recycler_view.let {
-                adapter = recipientAdapter
+                adapter = recipientOrderAdapter
             }
-        }
-    }
-
-    private fun setupButton() {
-        button_add_tag_people.setOnClickListener {
-            val intent = Intent(this, AddRecepientForm::class.java)
-            startActivity(intent)
         }
     }
 }
