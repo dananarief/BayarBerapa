@@ -5,11 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.helper.inflate
+import com.technolovy.android.bayarberapa.model.InvoiceItem
 import com.technolovy.android.bayarberapa.model.Recipient
 import kotlinx.android.synthetic.main.invoice_list_result_item.view.price_text
 import kotlinx.android.synthetic.main.people_list_item.view.*
 
 class TagPeopleListAdaptor(private var recipients:List<Recipient>): RecyclerView.Adapter<TagPeopleListAdaptor.TagPeopleListHolder>() {
+    var onTapEdit: ((Int)->Unit)? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TagPeopleListHolder {
         val inflatedView = parent.inflate(R.layout.people_list_item, false)
         return TagPeopleListHolder(inflatedView)
@@ -23,7 +25,7 @@ class TagPeopleListAdaptor(private var recipients:List<Recipient>): RecyclerView
         val recipients = recipients[position]
         holder.bindRecipientItem(recipients)
         holder.itemView.edit_text.setOnClickListener {
-            Log.d("edittext","logged")
+            onTapEdit?.invoke(position)
         }
     }
 

@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
         InvoiceManager.invoiceOnScreen = invoice
         InvoiceManager.firebaseVisionText = firebaseVisionText
 
-        startActivity(intent)
+        startActivityForResult(intent, GO_TO_PREVIEW_SCREEN)
     }
 
     private fun chooseButton() {
@@ -198,6 +198,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             isImageLoading = false
             render()
+
+            if (requestCode == GO_TO_PREVIEW_SCREEN) {
+                InvoiceManager.recipientList.clear()
+            }
         }
     }
 
@@ -241,5 +245,6 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE = 1001
+        private const val GO_TO_PREVIEW_SCREEN = 1002
     }
 }

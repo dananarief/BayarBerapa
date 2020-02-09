@@ -2,13 +2,15 @@ package com.technolovy.android.bayarberapa.model
 
 class Recipient {
     var name: String = ""
-    var invoiceItems: ArrayList<InvoiceItem>? = null
+    var recipientOrders: ArrayList<RecipientOrder>? = null
 
     fun getTotalPrice(): Double {
         var price = 0.0
-        invoiceItems?.let {
+        recipientOrders?.let {
             for (item in it) {
-                price += (item.pricePerUnit * item.quantity)
+                item.invoiceItem?.let {
+                    price += (it.pricePerUnit * item.buyQty)
+                }
             }
         }
         return price
