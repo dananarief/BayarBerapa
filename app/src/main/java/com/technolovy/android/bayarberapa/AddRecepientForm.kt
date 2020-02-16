@@ -131,7 +131,17 @@ class AddRecepientForm : AppCompatActivity() {
             editPosition = intent.getIntExtra("editId",-1)
             val savedRecipient: Recipient? = InvoiceManager.recipientList.getOrNull(editPosition)
             savedRecipient?.let {
-                recipient = it
+                val copyRecipient = Recipient()
+                copyRecipient.name = it.name
+                var copyRecipientOrders = ArrayList<RecipientOrder>()
+                var sourceCopyRecipientOrder = it.recipientOrders
+                sourceCopyRecipientOrder?.let { sourceRecipientOrderList ->
+                    for (recipientOrder in sourceRecipientOrderList) {
+                        copyRecipientOrders.add(recipientOrder.createCopy())
+                    }
+                }
+                copyRecipient.recipientOrders = copyRecipientOrders
+                recipient = copyRecipient
                 isEditMode = true
             }
         }

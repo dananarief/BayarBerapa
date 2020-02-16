@@ -16,6 +16,17 @@ class InvoiceItem() : Serializable, Parcelable {
     var type: InvoiceType? = null
     var pricePerUnit: Double = 0.0 //price per qty or per person (for shared fee)
 
+    fun createCopy(): InvoiceItem {
+        val copy = InvoiceItem()
+        copy.name = name
+        copy.quantity = quantity
+        copy.price = price
+        copy.rect = rect
+        copy.type = type
+        copy.pricePerUnit = pricePerUnit
+        return copy
+    }
+
     constructor(parcel: Parcel) : this() {
         name = parcel.readString()
         quantity = parcel.readDouble()
