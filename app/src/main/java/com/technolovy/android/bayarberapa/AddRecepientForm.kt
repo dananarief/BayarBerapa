@@ -2,6 +2,7 @@ package com.technolovy.android.bayarberapa
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -23,9 +24,14 @@ class AddRecepientForm : AppCompatActivity() {
     private var recipient: Recipient? = null
     private lateinit var recipientOrderAdapter: RecipientOrderAdapter
     private var editPosition: Int = -1
+    private var privateMode = 0
+    private var prefName = "bayarBerapa"
+    var cache: SharedPreferences? = null
+    var sugestion = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        cache = getSharedPreferences(prefName, privateMode)
         setContentView(R.layout.activity_add_recepient_form)
         retrievInfoFromInvoiceManager()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -40,9 +46,12 @@ class AddRecepientForm : AppCompatActivity() {
     }
 
     private fun setupAutoCompleteTextView() {
-        var sugestion = ArrayList<String>()
-        sugestion.add("aldo")
-        sugestion.add("anis")
+        //get suggestion from cache
+        val nameSugestions = cache?.getStringSet("nameSugestion",null)
+        nameSugestions?.let {
+            sugestion = ArrayList(it)
+        }
+
         var adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1,sugestion)
         autoCompleteTextView.setAdapter(adapter)
         autoCompleteTextView.threshold = 1
@@ -72,6 +81,7 @@ class AddRecepientForm : AppCompatActivity() {
                 recipient?.let {
                     InvoiceManager.recipientList.add(it)
                 }
+                saveNameToCache()
                 setResult(Activity.RESULT_OK)
                 finish()
             }
@@ -88,6 +98,18 @@ class AddRecepientForm : AppCompatActivity() {
         }
 
         return true
+    }
+
+    private fun saveNameToCache() {
+        cache?.let {
+            val editor = it.edit()
+            recipient?.name?.let {
+                sugestion.add(it)
+            }
+            val suggestionInSetString = HashSet(sugestion)
+            editor.putStringSet("nameSugestion",suggestionInSetString)
+            editor.apply()
+        }
     }
 
     private fun retrievInfoFromInvoiceManager() {
