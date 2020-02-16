@@ -11,4 +11,11 @@
     <string name="waiting_pict_button">Menunggu Gambar</string>
     <string name="choose_pict_button">Pilih Gambar</string>
     <string name="process_pict_button">Proses Gambar</string>
+    <string name="about_app_descriptions">
+        Bayar Berapa adalah aplikasi penghitungan invoice secara otomatis dengan memanfaatkan teknologi pengenalan gambar.
+        Saat ini aplikasi baru mendukung untuk pengenalan invoice Grab. Tunggu fitur - fitur kami berikutnya yaa :)
+    </string>>
+    <string name="about_app_contacts">
+        Jika kamu ada masukan atau keluhan, Silakan untuk menginformasikan melalui email: <b>support@technolovy.com</b>
+    </string>>
 </resources>
