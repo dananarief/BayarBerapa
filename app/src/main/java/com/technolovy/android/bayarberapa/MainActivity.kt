@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +21,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.model.Grab
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_main.*
@@ -41,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         //setMobsAds()
+        setImageInfoTextListener()
         setButtonListener()
         setPersonQtyPicker()
         render()
@@ -77,14 +81,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setImageInfoTextListener() {
+        place_holder_text.setOnClickListener {
+            if (invoice != null) {
+                invoice = null
+                invoiceImageUri = null
+                InvoiceManager.invoiceImg = null
+                InvoiceManager.recipientList.clear()
+                InvoiceManager.firebaseVisionText = null
+                InvoiceManager.invoiceOnScreen = null
+                render()
+            }
+        }
+    }
+
     private fun processButton() {
-        Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
         val intent = Intent(this, InvoiceListPreview::class.java)
         invoice?.numOfPerson = person
         InvoiceManager.invoiceOnScreen = invoice
         InvoiceManager.firebaseVisionText = firebaseVisionText
+        InvoiceManager.invoiceImg = invoiceImageUri
 
-        startActivity(intent)
+        startActivityForResult(intent, GO_TO_PREVIEW_SCREEN)
     }
 
     private fun chooseButton() {
@@ -198,13 +216,28 @@ class MainActivity : AppCompatActivity() {
         } else {
             isImageLoading = false
             render()
+
+            if (requestCode == GO_TO_PREVIEW_SCREEN) {
+                InvoiceManager.recipientList.clear()
+            }
         }
     }
 
     /// Render Part
     private fun render() {
+        renderImageInfoText()
         renderChooseImageButton()
         renderImage()
+    }
+
+    private fun renderImageInfoText() {
+        if (invoice == null) {
+            place_holder_text.text = "Silakan ulpload invoice Grab mu..."
+            place_holder_text.setTextColor(ContextCompat.getColor(this,android.R.color.tab_indicator_text))
+        } else {
+            place_holder_text.text = "Hapus Gambar"
+            place_holder_text.setTextColor(ContextCompat.getColor(this,R.color.colorPrimary))
+        }
     }
 
     private fun renderChooseImageButton() {
@@ -213,7 +246,7 @@ class MainActivity : AppCompatActivity() {
         } else if (invoice == null) {
             button_choose_image.text = getString(R.string.choose_pict_button)
         } else {
-            button_choose_image.text = getString(R.string.calculate_button)
+            button_choose_image.text = getString(R.string.process_pict_button)
         }
 
         if (isImageLoading) {
@@ -236,10 +269,12 @@ class MainActivity : AppCompatActivity() {
         } else if (invoiceImageUri != null) {
             animation_view.setImageURI(invoiceImageUri)
         }
+        animation_view.playAnimation()
     }
 
     companion object {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE = 1001
+        private const val GO_TO_PREVIEW_SCREEN = 1002
     }
 }

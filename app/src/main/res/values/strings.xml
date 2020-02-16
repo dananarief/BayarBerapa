@@ -10,5 +10,5 @@
     </string-array>
     <string name="waiting_pict_button">Menunggu Gambar</string>
     <string name="choose_pict_button">Pilih Gambar</string>
-    <string name="calculate_button">Hitung</string>
+    <string name="process_pict_button">Proses Gambar</string>
 </resources>

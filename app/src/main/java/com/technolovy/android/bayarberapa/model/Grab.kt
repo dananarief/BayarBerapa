@@ -32,6 +32,9 @@ class Grab: InvoiceITF, Serializable {
         // re looping the map object, identify the type (purchase, discount, tax, or shared_fee)
         fillTypeForInvoiceItems(invoiceItemsToProcess)
 
+        // improved process, eg: tax case where sometimes it is not recognized by system
+        improveResult(invoiceItemsToProcess)
+
         // calculate
         val result = calculate(convertHashMapToList(invoiceItemsToProcess))
 
@@ -270,5 +273,47 @@ class Grab: InvoiceITF, Serializable {
         var diffTop = frame1.top - frame2.top
         diffTop = abs(diffTop)
         return diffTop < 15
+    }
+
+    private fun improveResult(result: HashMap<Rect, InvoiceItem>) {
+        var missingInvoiceInfo = result.filter {
+            it.value.name.isEmpty()
+        }.values.first()
+
+        var isTheMissingInvoiceTax: Boolean = true
+        for ((_, v) in result) {
+            if (v.name.contains("subtotal", ignoreCase = true)) {
+                missingInvoiceInfo.rect?.top?.let { taxTop ->
+                    v.rect?.bottom?.let { subTotalBottom ->
+                        isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxTop > subTotalBottom)
+                    }
+                }
+            } else if (v.name.contains("Promo",ignoreCase = true)) {
+                missingInvoiceInfo.rect?.bottom?.let { taxBottom ->
+                    v.rect?.top?.let { promoTop ->
+                        isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxBottom < promoTop)
+                    }
+                }
+            } else if (v.name.contains("tax", ignoreCase = true)) {
+
+            } else if (v.name.contains("delivery fee", ignoreCase = true)) {
+                missingInvoiceInfo.rect?.bottom?.let { taxBottom ->
+                    v.rect?.top?.let { deliveryTop ->
+                        isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxBottom < deliveryTop)
+                    }
+                }
+            } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
+                missingInvoiceInfo.rect?.bottom?.let { taxBottom ->
+                    v.rect?.top?.let { chargeServiceTop ->
+                        isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxBottom < chargeServiceTop)
+                    }
+                }
+            }
+        }
+
+        if (isTheMissingInvoiceTax) {
+            missingInvoiceInfo.name = "tax"
+            missingInvoiceInfo.type = InvoiceItem.InvoiceType.TAX
+        }
     }
 }

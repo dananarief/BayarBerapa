@@ -34,7 +34,7 @@
             android:textAlignment="center"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp"
-            android:text="Meow, upload invoice grab mu..." />
+            android:text="Silakan upload invoice grab mu..." />
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/person_qty_container"
@@ -92,7 +92,7 @@
             app:np_value="1"/>
 
     <Button
-            android:text="Choose Pict"
+            android:text="Pilih Gambar"
             android:background="@color/colorPrimary"
             android:textColor="#FFFFFF"
             android:layout_width="match_parent"
