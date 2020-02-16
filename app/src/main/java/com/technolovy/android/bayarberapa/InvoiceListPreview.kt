@@ -107,7 +107,7 @@ class InvoiceListPreview : AppCompatActivity() {
     }
 
     private fun setupCheckImageText() {
-        textView.setOnClickListener {
+        picture_text.setOnClickListener {
             val intent = Intent(this, ImageDetailActivity::class.java)
             startActivity(intent)
         }

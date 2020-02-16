@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.helper.inflate
-import com.technolovy.android.bayarberapa.helper.rupiah
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.custom_spinner_item.view.*
 import kotlinx.android.synthetic.main.custom_spinner_item_error.view.*
