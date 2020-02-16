@@ -27,6 +27,7 @@ class InvoiceListPreview : AppCompatActivity() {
         retrievInfoFromInvoiceManager()
         processTheImage()
         setupButton()
+        setupCheckImageText()
     }
 
     override fun onNavigateUp(): Boolean {
@@ -85,6 +86,13 @@ class InvoiceListPreview : AppCompatActivity() {
     private fun setupButton() {
         button_calculate.setOnClickListener {
             processButton()
+        }
+    }
+
+    private fun setupCheckImageText() {
+        textView.setOnClickListener {
+            val intent = Intent(this, ImageDetailActivity::class.java)
+            startActivity(intent)
         }
     }
 
