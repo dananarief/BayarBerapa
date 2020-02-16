@@ -5,6 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.*
 
 ///*
 // Check if text is price
@@ -46,4 +50,10 @@ fun extractPriceToDouble(text: String): Double? {
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutRes, this, attachToRoot)
+}
+
+fun roundOffDecimal(number: Double): Double? {
+    val df = DecimalFormat("###.###")
+    df.roundingMode = RoundingMode.HALF_EVEN
+    return df.format(number).toDouble()
 }

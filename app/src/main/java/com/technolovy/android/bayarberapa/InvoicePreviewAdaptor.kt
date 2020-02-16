@@ -1,6 +1,7 @@
 package com.technolovy.android.bayarberapa
 
 import android.content.Context
+import android.icu.text.DecimalFormat
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -13,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.helper.inflate
+import com.technolovy.android.bayarberapa.helper.rupiah
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.custom_spinner_item.view.*
 import kotlinx.android.synthetic.main.custom_spinner_item_error.view.*
@@ -77,7 +79,12 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
         fun bindInvoiceItem(invoiceItem: InvoiceItem) {
             this.item = invoiceItem
             view.item_text.setText(invoiceItem.name)
-            view.price_text.setText(invoiceItem.price.toString())
+
+            val format = java.text.DecimalFormat("0.#")
+            val priceWithoutDecimal = format.format(invoiceItem.price)
+
+            view.price_text.setText(priceWithoutDecimal)
+
 
             Log.d("change","name ${invoiceItem.name}")
             Log.d("change","price ${invoiceItem.price.toString()}")

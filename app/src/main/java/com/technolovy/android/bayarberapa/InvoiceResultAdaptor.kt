@@ -1,12 +1,16 @@
 package com.technolovy.android.bayarberapa
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.helper.inflate
+import com.technolovy.android.bayarberapa.helper.roundOffDecimal
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.invoice_list_result_item.view.*
+import java.text.NumberFormat
+import java.util.*
 
 class InvoiceResultAdaptor(private var invoiceItems:List<InvoiceItem>): RecyclerView.Adapter<InvoiceResultAdaptor.InvoiceHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceHolder {
@@ -29,7 +33,13 @@ class InvoiceResultAdaptor(private var invoiceItems:List<InvoiceItem>): Recycler
         fun bindInvoiceItem(invoiceItem: InvoiceItem) {
             this.item = invoiceItem
             view.item_text.text = invoiceItem.name
-            view.price_text.text = invoiceItem.pricePerUnit.toString()
+
+            Log.d("actual val","${invoiceItem.pricePerUnit}")
+            val roundoff = roundOffDecimal(invoiceItem.pricePerUnit)
+            Log.d("actual round","${roundoff}")
+            val pricethousand = NumberFormat.getNumberInstance(Locale.US).format(roundoff)
+
+            view.price_text.text = pricethousand
         }
     }
 }

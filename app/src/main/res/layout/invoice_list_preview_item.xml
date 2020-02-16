@@ -24,7 +24,8 @@
             android:layout_height="50dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/spinner_invoice_type"
-            android:inputType="numberDecimal"
+            android:inputType="number"
+            android:digits="0123456789"
             android:textAlignment="textEnd"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="12dp"/>
