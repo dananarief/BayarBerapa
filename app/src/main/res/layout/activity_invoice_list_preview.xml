@@ -16,7 +16,7 @@
             />
 
     <Button
-            android:text="Choose Pict"
+            android:text="Hitung Otomatis"
             android:background="@color/colorPrimary"
             android:textColor="#FFFFFF"
             android:layout_width="match_parent"

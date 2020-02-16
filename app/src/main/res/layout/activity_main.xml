@@ -92,7 +92,7 @@
             app:np_value="1"/>
 
     <Button
-            android:text="Choose Pict"
+            android:text="Pilih Gambar"
             android:background="@color/colorPrimary"
             android:textColor="#FFFFFF"
             android:layout_width="match_parent"

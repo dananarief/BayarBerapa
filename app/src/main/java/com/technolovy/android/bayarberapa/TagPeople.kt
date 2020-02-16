@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
 import com.technolovy.android.bayarberapa.model.InvoiceItem
@@ -21,6 +22,7 @@ class TagPeople : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tag_people)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        render()
         setupRecyclerView()
         setupButton()
     }
@@ -28,6 +30,23 @@ class TagPeople : AppCompatActivity() {
     override fun onNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        render()
+    }
+
+    private fun render() {
+        if (InvoiceManager.recipientList.isEmpty()) {
+            empty_list_placeholder.visibility = View.VISIBLE
+            people_name.visibility = View.INVISIBLE
+            price_title_tag_people.visibility = View.INVISIBLE
+        } else {
+            empty_list_placeholder.visibility = View.INVISIBLE
+            people_name.visibility = View.VISIBLE
+            price_title_tag_people.visibility = View.VISIBLE
+        }
     }
 
     private fun setupRecyclerView() {
@@ -61,6 +80,7 @@ class TagPeople : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == GO_TO_ADD_RECIPIENT) {
             setupRecyclerView()
+            render()
         }
     }
 

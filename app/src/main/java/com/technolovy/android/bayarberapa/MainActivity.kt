@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity() {
         } else if (invoice == null) {
             button_choose_image.text = getString(R.string.choose_pict_button)
         } else {
-            button_choose_image.text = getString(R.string.calculate_button)
+            button_choose_image.text = getString(R.string.process_pict_button)
         }
 
         if (isImageLoading) {
