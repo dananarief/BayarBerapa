@@ -45,8 +45,8 @@ class InvoiceListPreview : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             if (item.itemId == R.id.preview_page_more_menu) {
-//                val intent = Intent(this, AboutAppsActivity::class.java)
-//                startActivity(intent)
+                val intent = Intent(this, PreviewInfoActivity::class.java)
+                startActivity(intent)
             }
         }
         return super.onOptionsItemSelected(item)

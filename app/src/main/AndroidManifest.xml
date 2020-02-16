@@ -12,6 +12,9 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
+                android:name=".PreviewInfoActivity"
+                android:parentActivityName=".InvoiceListPreview"></activity>
+        <activity
                 android:name=".AboutAppsActivity"
                 android:parentActivityName=".MainActivity" />
         <activity
@@ -19,7 +22,7 @@
                 android:parentActivityName=".InvoiceListPreview" />
         <activity
                 android:name=".AddRecepientForm"
-                android:parentActivityName=".TagPeople"/>
+                android:parentActivityName=".TagPeople" />
         <activity
                 android:name=".TagPeople"
                 android:parentActivityName=".InvoiceListResult" />
