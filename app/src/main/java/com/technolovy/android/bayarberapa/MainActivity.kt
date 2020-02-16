@@ -86,6 +86,10 @@ class MainActivity : AppCompatActivity() {
             if (invoice != null) {
                 invoice = null
                 invoiceImageUri = null
+                InvoiceManager.invoiceImg = null
+                InvoiceManager.recipientList.clear()
+                InvoiceManager.firebaseVisionText = null
+                InvoiceManager.invoiceOnScreen = null
                 render()
             }
         }
@@ -96,6 +100,7 @@ class MainActivity : AppCompatActivity() {
         invoice?.numOfPerson = person
         InvoiceManager.invoiceOnScreen = invoice
         InvoiceManager.firebaseVisionText = firebaseVisionText
+        InvoiceManager.invoiceImg = invoiceImageUri
 
         startActivityForResult(intent, GO_TO_PREVIEW_SCREEN)
     }
