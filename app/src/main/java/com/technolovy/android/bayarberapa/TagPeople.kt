@@ -30,10 +30,6 @@ class TagPeople : AppCompatActivity() {
         return true
     }
 
-    private fun setupEditButon() {
-
-    }
-
     private fun setupRecyclerView() {
         recycler_view.apply {
             layoutManager = LinearLayoutManager(context)

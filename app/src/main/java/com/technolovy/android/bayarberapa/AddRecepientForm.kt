@@ -1,24 +1,17 @@
 package com.technolovy.android.bayarberapa
 
 import android.app.Activity
-import android.content.Intent
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
-import com.technolovy.android.bayarberapa.model.InvoiceITF
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import com.technolovy.android.bayarberapa.model.Recipient
 import com.technolovy.android.bayarberapa.model.RecipientOrder
 import kotlinx.android.synthetic.main.activity_add_recepient_form.*
 import kotlinx.android.synthetic.main.activity_add_recepient_form.recycler_view
-import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
-import kotlinx.android.synthetic.main.activity_tag_people.*
 
 class AddRecepientForm : AppCompatActivity() {
     private var recipient: Recipient? = null
@@ -28,6 +21,7 @@ class AddRecepientForm : AppCompatActivity() {
     private var prefName = "bayarBerapa"
     var cache: SharedPreferences? = null
     var sugestion = ArrayList<String>()
+    var isEditMode: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +73,11 @@ class AddRecepientForm : AppCompatActivity() {
             if (isFormValid()) {
                 recipient?.name = autoCompleteTextView.text.toString()
                 recipient?.let {
-                    InvoiceManager.recipientList.add(it)
+                    if (isEditMode) {
+                        InvoiceManager.recipientList[editPosition] = it
+                    } else {
+                        InvoiceManager.recipientList.add(it)
+                    }
                 }
                 saveNameToCache()
                 setResult(Activity.RESULT_OK)
@@ -129,16 +127,13 @@ class AddRecepientForm : AppCompatActivity() {
                 it.recipientOrders = recipientOrderList
             }
 
-
             // change initial value fron previous data
             editPosition = intent.getIntExtra("editId",-1)
-            Log.d("editPosition", "add ${editPosition.toString()}")
             val savedRecipient: Recipient? = InvoiceManager.recipientList.getOrNull(editPosition)
             savedRecipient?.let {
                 recipient = it
-                Log.d("editPosition", "assigned ${it.name} ${it.getTotalPrice()}")
+                isEditMode = true
             }
-            Log.d("editPosition", "finished")
         }
     }
 }
