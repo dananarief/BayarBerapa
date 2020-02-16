@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.ml.vision.text.FirebaseVisionText
@@ -33,6 +35,21 @@ class InvoiceListPreview : AppCompatActivity() {
     override fun onNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.preview_page_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        item?.let {
+            if (item.itemId == R.id.preview_page_more_menu) {
+                val intent = Intent(this, PreviewInfoActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -90,7 +107,7 @@ class InvoiceListPreview : AppCompatActivity() {
     }
 
     private fun setupCheckImageText() {
-        textView.setOnClickListener {
+        picture_text.setOnClickListener {
             val intent = Intent(this, ImageDetailActivity::class.java)
             startActivity(intent)
         }

@@ -5,10 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.technolovy.android.bayarberapa.helper.inflate
+import com.technolovy.android.bayarberapa.helper.roundOffDecimal
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import com.technolovy.android.bayarberapa.model.Recipient
 import kotlinx.android.synthetic.main.invoice_list_result_item.view.price_text
 import kotlinx.android.synthetic.main.people_list_item.view.*
+import java.text.NumberFormat
+import java.util.*
 
 class TagPeopleListAdaptor(private var recipients:List<Recipient>): RecyclerView.Adapter<TagPeopleListAdaptor.TagPeopleListHolder>() {
     var onTapEdit: ((Int)->Unit)? = null
@@ -35,7 +38,7 @@ class TagPeopleListAdaptor(private var recipients:List<Recipient>): RecyclerView
         fun bindRecipientItem(recipients: Recipient) {
             this.item = recipients
             view.people_name.text = recipients.name
-            view.price_text.text = recipients.getTotalPrice().toString()
+            view.price_text.text = NumberFormat.getNumberInstance(Locale.US).format(recipients.getTotalPrice())
         }
     }
 }
