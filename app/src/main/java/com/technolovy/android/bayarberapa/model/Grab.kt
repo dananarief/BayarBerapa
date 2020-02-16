@@ -276,20 +276,27 @@ class Grab: InvoiceITF, Serializable {
     }
 
     private fun improveResult(result: HashMap<Rect, InvoiceItem>) {
-        var missingInvoiceInfo = result.filter {
-            it.value.name.isEmpty()
-        }.values.first()
+
+        var missingInvoiceInfo: InvoiceItem? = null
+
+        for ((_, v) in result) {
+            if (v.name.isEmpty()) {
+                missingInvoiceInfo = v
+                break
+            }
+        }
+
 
         var isTheMissingInvoiceTax: Boolean = true
         for ((_, v) in result) {
             if (v.name.contains("subtotal", ignoreCase = true)) {
-                missingInvoiceInfo.rect?.top?.let { taxTop ->
+                missingInvoiceInfo?.rect?.top?.let { taxTop ->
                     v.rect?.bottom?.let { subTotalBottom ->
                         isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxTop > subTotalBottom)
                     }
                 }
             } else if (v.name.contains("Promo",ignoreCase = true)) {
-                missingInvoiceInfo.rect?.bottom?.let { taxBottom ->
+                missingInvoiceInfo?.rect?.bottom?.let { taxBottom ->
                     v.rect?.top?.let { promoTop ->
                         isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxBottom < promoTop)
                     }
@@ -297,13 +304,13 @@ class Grab: InvoiceITF, Serializable {
             } else if (v.name.contains("tax", ignoreCase = true)) {
 
             } else if (v.name.contains("delivery fee", ignoreCase = true)) {
-                missingInvoiceInfo.rect?.bottom?.let { taxBottom ->
+                missingInvoiceInfo?.rect?.bottom?.let { taxBottom ->
                     v.rect?.top?.let { deliveryTop ->
                         isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxBottom < deliveryTop)
                     }
                 }
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
-                missingInvoiceInfo.rect?.bottom?.let { taxBottom ->
+                missingInvoiceInfo?.rect?.bottom?.let { taxBottom ->
                     v.rect?.top?.let { chargeServiceTop ->
                         isTheMissingInvoiceTax = isTheMissingInvoiceTax && (taxBottom < chargeServiceTop)
                     }
@@ -312,8 +319,8 @@ class Grab: InvoiceITF, Serializable {
         }
 
         if (isTheMissingInvoiceTax) {
-            missingInvoiceInfo.name = "tax"
-            missingInvoiceInfo.type = InvoiceItem.InvoiceType.TAX
+            missingInvoiceInfo?.name = "tax"
+            missingInvoiceInfo?.type = InvoiceItem.InvoiceType.TAX
         }
     }
 }
