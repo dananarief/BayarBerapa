@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +21,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.model.Grab
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_main.*
@@ -41,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
         //setMobsAds()
+        setImageInfoTextListener()
         setButtonListener()
         setPersonQtyPicker()
         render()
@@ -73,6 +77,16 @@ class MainActivity : AppCompatActivity() {
                 chooseButton()
             } else {
                 processButton()
+            }
+        }
+    }
+
+    private fun setImageInfoTextListener() {
+        place_holder_text.setOnClickListener {
+            if (invoice != null) {
+                invoice = null
+                invoiceImageUri = null
+                render()
             }
         }
     }
@@ -206,8 +220,19 @@ class MainActivity : AppCompatActivity() {
 
     /// Render Part
     private fun render() {
+        renderImageInfoText()
         renderChooseImageButton()
         renderImage()
+    }
+
+    private fun renderImageInfoText() {
+        if (invoice == null) {
+            place_holder_text.text = "Silakan ulpload invoice Grab mu..."
+            place_holder_text.setTextColor(ContextCompat.getColor(this,android.R.color.tab_indicator_text))
+        } else {
+            place_holder_text.text = "Hapus Gambar"
+            place_holder_text.setTextColor(ContextCompat.getColor(this,R.color.colorPrimary))
+        }
     }
 
     private fun renderChooseImageButton() {
@@ -239,6 +264,7 @@ class MainActivity : AppCompatActivity() {
         } else if (invoiceImageUri != null) {
             animation_view.setImageURI(invoiceImageUri)
         }
+        animation_view.playAnimation()
     }
 
     companion object {
