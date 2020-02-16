@@ -17,7 +17,9 @@
         <activity
                 android:name=".ImageDetailActivity"
                 android:parentActivityName=".InvoiceListPreview" />
-        <activity android:name=".AddRecepientForm" />
+        <activity
+                android:name=".AddRecepientForm"
+                android:parentActivityName=".TagPeople"/>
         <activity
                 android:name=".TagPeople"
                 android:parentActivityName=".InvoiceListResult" />
