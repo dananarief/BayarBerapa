@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processButton() {
-        Toast.makeText(this, "will process", Toast.LENGTH_LONG).show()
         val intent = Intent(this, InvoiceListPreview::class.java)
         invoice?.numOfPerson = person
         InvoiceManager.invoiceOnScreen = invoice
