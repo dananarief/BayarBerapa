@@ -38,6 +38,10 @@ fun isPrice(text: String): Boolean {
 
 fun extractPriceToDouble(text: String): Double? {
     var checkText = text
+
+    // to handle like Fire Wings 6 pcs
+    if (!checkText.contains(".")) { return null }
+
     Log.d("check price","${checkText}")
     checkText = checkText.replace("Rp", "")
     checkText = checkText.replace(".", "")

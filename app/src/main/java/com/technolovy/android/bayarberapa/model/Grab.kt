@@ -57,14 +57,14 @@ class Grab: InvoiceITF, Serializable {
             for (line in block.lines) {
 
                 //make bottom frame order summary as starting point
-                if (line.text.equals("order summary", ignoreCase = true)) {
+                if (line.text.contains("order summary",ignoreCase = true)) {
                     line.boundingBox?.bottom?.let {
                         frameScope.top = it
                     }
                 }
 
                 //make top frame Total as end point
-                if (line.text.equals("total", ignoreCase = true)) {
+                if ((line.text.contains("total",ignoreCase = true)) && !line.text.contains("subtotal", ignoreCase = true)) {
                     line.boundingBox?.top?.let {
                         frameScope.bottom = it
                     }
