@@ -103,6 +103,17 @@ class Grab: InvoiceITF, Serializable {
         val invoiceItems = hashMapOf<Rect, InvoiceItem>()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
+//                line.boundingBox?.let {
+//                    val rect = it
+//                    if (isFrameInsideScope(rect, frameScope)) {
+//                        val priceWithDoubleFormat = extractPriceToDouble(line.text)
+//                        priceWithDoubleFormat?.let { doublePrice ->
+//                            //if the text is price, save the frame as key to the map
+//                            invoiceItems[rect] = InvoiceItem(rect, doublePrice)
+//                        }
+//                    }
+//                }
+
                 for (element in line.elements) {
                     element?.boundingBox?.let {
                         val rect = it
@@ -117,6 +128,8 @@ class Grab: InvoiceITF, Serializable {
                 }
             }
         }
+
+
         return invoiceItems
     }
 
@@ -154,7 +167,7 @@ class Grab: InvoiceITF, Serializable {
             for (line in block.lines) {
                 line.boundingBox?.let {
                     val rect = it
-
+                    Log.d("line text","${line.text}")
                     if (isFrameInsideScope(rect, frameScope)) {
                         for ((k, _) in invoiceItems) {
                             if (isFrameConsideredAsOneLine(rect,k)) {
@@ -182,7 +195,7 @@ class Grab: InvoiceITF, Serializable {
             } else if (v.name.contains("delivery fee", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
-                v.type = InvoiceItem.InvoiceType.SHARED_FEE
+                v.type = InvoiceItem.InvoiceType.TAX
             } else if (v.name.contains("subtotal", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SUBTOTAL
             }else {
