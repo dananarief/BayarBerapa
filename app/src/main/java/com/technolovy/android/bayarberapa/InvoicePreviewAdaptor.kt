@@ -84,6 +84,8 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.price_text.setText(priceWithoutDecimal)
 
+            view.qty.setText(invoiceItem.quantity.toString())
+
 
             Log.d("change","name ${invoiceItem.name}")
             Log.d("change","price ${invoiceItem.price.toString()}")
@@ -142,7 +144,23 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                         item?.price = it
                     }
                 }
+            })
 
+            view.qty.addTextChangedListener(object: TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val newQty = s.toString().toDoubleOrNull()
+                    newQty?.let {
+                        item?.quantity = it
+                    }
+                }
             })
         }
     }

@@ -49,6 +49,10 @@ dependencies {
 
     //recycler view android x
     implementation "androidx.recyclerview:recyclerview:1.1.0"
+
+    //card view
+    def cardview_version = "1.0.0"
+    implementation "androidx.cardview:cardview:$cardview_version"
 }
 
 apply plugin: 'com.google.gms.google-services'
