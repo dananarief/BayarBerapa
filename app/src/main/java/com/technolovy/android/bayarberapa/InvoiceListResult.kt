@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.TrackerEvent
+import com.technolovy.android.bayarberapa.helper.sendTracker
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
@@ -75,6 +77,7 @@ class InvoiceListResult : AppCompatActivity() {
 
     private fun setupButton() {
         button_tag_people.setOnClickListener {
+            sendTracker(TrackerEvent.tagFriendsOnResultPage, this)
             val intent = Intent(this, TagPeople::class.java)
             InvoiceManager.invoiceOnScreen = invoice
             startActivity(intent)

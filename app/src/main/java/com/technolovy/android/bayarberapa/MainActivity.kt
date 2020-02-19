@@ -22,8 +22,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
-import com.technolovy.android.bayarberapa.helper.InvoiceManager
-import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
+import com.technolovy.android.bayarberapa.helper.*
 import com.technolovy.android.bayarberapa.model.Grab
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_main.*
@@ -44,8 +43,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        InvoiceManager.journeyId = UUID.randomUUID().toString()
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        //setMobsAds()
+        setMobsAds()
         setImageInfoTextListener()
         setButtonListener()
         setPersonQtyPicker()
@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             if (item.itemId == R.id.more_menu) {
+                sendTracker(TrackerEvent.openAboutApps, this)
                 val intent = Intent(this, AboutAppsActivity::class.java)
                 startActivity(intent)
             }
@@ -79,17 +80,8 @@ class MainActivity : AppCompatActivity() {
         interstitialAds.loadAd(AdRequest.Builder().build())
     }
 
-    private fun testSentTracker() {
-        val bundle = Bundle()
-        val currentTime = Calendar.getInstance().time
-        bundle.putString("click_time", currentTime.toString())
-        bundle.putString("app_version", "0.1")
-        firebaseAnalytics?.logEvent("choose_image",bundle)
-    }
-
     private fun setButtonListener() {
         button_choose_image.setOnClickListener {
-            testSentTracker()
             if (invoice == null) {
                 chooseButton()
             } else {
@@ -100,6 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setImageInfoTextListener() {
         place_holder_text.setOnClickListener {
+            sendTracker(TrackerEvent.deleteImageOnUploadInvoice,this)
             if (invoice != null) {
                 invoice = null
                 invoiceImageUri = null
@@ -113,16 +106,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processButton() {
+        sendTracker(TrackerEvent.processImageOnUploadInvoice,this)
         val intent = Intent(this, InvoiceListPreview::class.java)
         invoice?.numOfPerson = person
         InvoiceManager.invoiceOnScreen = invoice
         InvoiceManager.firebaseVisionText = firebaseVisionText
         InvoiceManager.invoiceImg = invoiceImageUri
 
+        //comment when developing to avoid fraud
+        if (interstitialAds.isLoaded) {
+            sendTracker(TrackerEvent.adsShowOnUploadInvoicePage, this)
+            interstitialAds.show()
+        } else {
+            sendTrackerError(TrackerEvent.adsFailToLoadOnUploadInvoicePage, this, "fait to load ads")
+        }
+
         startActivityForResult(intent, GO_TO_PREVIEW_SCREEN)
     }
 
     private fun chooseButton() {
+        sendTracker(TrackerEvent.chooseImageOnUploadInvoice,this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 //permission denied
@@ -165,6 +168,7 @@ class MainActivity : AppCompatActivity() {
                     setInvoiceBasedOnBrand(firebaseVisionText)
                 }
                 .addOnFailureListener { e ->
+                    sendTrackerError(TrackerEvent.errorProcessImage, this, e.toString())
                     Toast.makeText(
                         this,
                         "Aplikasi Masih Menyiapkan Data, Mohon Coba beberapa saat lagi",
@@ -179,6 +183,7 @@ class MainActivity : AppCompatActivity() {
         try {
             image = FirebaseVisionImage.fromFilePath(this, imgUri)
         } catch (e: IOException) {
+            sendTrackerError(TrackerEvent.errorVisionImage, this, e.toString())
             e.printStackTrace()
         }
         return image
@@ -190,8 +195,10 @@ class MainActivity : AppCompatActivity() {
             invoice = Grab()
         } else if (firebaseText.text.contains("gojek", ignoreCase = true)) {
             //todo: init gojek
+            sendTrackerError(TrackerEvent.errorRecognizeBrand, this, "brand gojek")
             //implement later
         } else {
+            sendTrackerError(TrackerEvent.errorRecognizeBrand, this, "brand not found")
             Toast.makeText(
                 this,
                 "Mohon maaf, invoice belum dikenali. Silakan gunakan fitur manual", Toast.LENGTH_LONG
@@ -209,6 +216,7 @@ class MainActivity : AppCompatActivity() {
                     //permission from popup granted
                     pickImageFromGallery()
                 } else {
+                    sendTrackerError(TrackerEvent.errorPermissionDenied, this, "permission not granted")
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -220,13 +228,6 @@ class MainActivity : AppCompatActivity() {
 
             invoiceImageUri = data?.data
             render()
-            //comment when developing to avoid fraud
-//            if (interstitialAds.isLoaded) {
-//                //interstitialAds.show()
-//            } else {
-//                //tracker ads fail to load
-//                Log.d("tracker", "fail to load")
-//            }
             isImageLoading = true
             render()
             data?.data?.let { recognizeText(it) }

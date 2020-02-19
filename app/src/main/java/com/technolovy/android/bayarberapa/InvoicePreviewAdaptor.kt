@@ -12,8 +12,10 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.technolovy.android.bayarberapa.helper.TrackerEvent
 import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.helper.inflate
+import com.technolovy.android.bayarberapa.helper.sendTracker
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.custom_spinner_item.view.*
 import kotlinx.android.synthetic.main.custom_spinner_item_error.view.*
@@ -36,6 +38,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
         val invoiceItem = invoiceItems[position]
         holder.bindInvoiceItem(invoiceItem)
         holder.itemView.delete_button.setOnClickListener {
+            sendTracker(TrackerEvent.deleteItemonPreviewPage, holder.context)
             invoiceItems.removeAt(position)
             notifyDataSetChanged()
         }
@@ -52,6 +55,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                 position: Int,
                 id: Long
             ) {
+                sendTracker(TrackerEvent.changeTypeOnPreviewPage, holder.context)
                 val selectedDropdown = parent?.getItemAtPosition(position).toString()
                 val enumBasedOnDropdown = InvoiceItem.InvoiceType.values().firstOrNull {
                     it.displayName == selectedDropdown
@@ -110,15 +114,14 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.item_text.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    Log.d("otc","after ${s.toString()}")
+                    sendTracker(TrackerEvent.changeItemNameOnPreviewPage, context)
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                    Log.d("otc","before ${s.toString()}")
+
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d("otc"," original ${invoiceItem.name} ${s.toString()} ${start} ${before} ${count}")
                     item?.name = s.toString()
                 }
 
@@ -127,7 +130,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.price_text.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-
+                    sendTracker(TrackerEvent.changePriceTextOnPreviewPage, context)
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -144,7 +147,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.qty.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-
+                    sendTracker(TrackerEvent.changeQtyOnPreviewPage, context)
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
