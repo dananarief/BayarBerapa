@@ -104,6 +104,15 @@ class InvoiceListPreview : AppCompatActivity() {
         button_calculate.setOnClickListener {
             processButton()
         }
+
+        button_add_invoice_item.setOnClickListener {
+            val newItem = InvoiceItem()
+            newItem.quantity = 1.0
+            newItem.price = 0.0
+            newItem.type = InvoiceItem.InvoiceType.PURCHASEITEM
+            invoiceItemsResult.add(0, newItem)
+            recycler_view.adapter?.notifyDataSetChanged()
+        }
     }
 
     private fun setupCheckImageText() {

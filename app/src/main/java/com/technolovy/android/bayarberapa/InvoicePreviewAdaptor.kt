@@ -35,6 +35,12 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
     override fun onBindViewHolder(holder: InvoiceHolder, position: Int) {
         val invoiceItem = invoiceItems[position]
         holder.bindInvoiceItem(invoiceItem)
+        holder.itemView.delete_button.setOnClickListener {
+            invoiceItems.removeAt(position)
+            notifyDataSetChanged()
+        }
+
+
         holder.itemView.spinner_invoice_type.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
@@ -61,12 +67,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                     view?.spinner_item?.setTextColor(ContextCompat.getColor(holder.context,R.color.colorPrimary))
                 }
 
-                //(parent?.getChildAt(position) as TextView).setTextColor(ContextCompat.getColor(holder.context,R.color.colorDisabled))
-                //view.spinner_invoice_type.spinner_item.setTextColor(ContextCompat.getColor(holder.,R.color.colorDisabled))
-                //holder.spinnerAdapter.st
-//                if (enumBasedOnDropdown == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
-//                    holder.bindInvoiceItem(invoiceItem)
-//                }
+                holder.itemView.qty?.isEnabled = invoiceItem.type == InvoiceItem.InvoiceType.PURCHASEITEM
             }
         }
     }
@@ -84,18 +85,13 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.price_text.setText(priceWithoutDecimal)
 
-            view.qty.setText(invoiceItem.quantity.toString())
+            val qtyWithoutDecimal = format.format(invoiceItem.quantity)
+            view.qty.setText(qtyWithoutDecimal)
 
-
-            Log.d("change","name ${invoiceItem.name}")
-            Log.d("change","price ${invoiceItem.price.toString()}")
-            Log.d("change","name show ${view.item_text.text}")
-            Log.d("change","price show ${view.price_text.text}")
+            view.qty.isEnabled = invoiceItem.type == InvoiceItem.InvoiceType.PURCHASEITEM
 
             var resourceLayout: Int = R.layout.custom_spinner_item
-            if (invoiceItem.type == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
-                //resourceLayout = R.layout.custom_spinner_item_error
-            }
+
             spinnerAdapter = ArrayAdapter.createFromResource(
                 context,
                 R.array.invoice_type_array,
