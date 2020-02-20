@@ -105,12 +105,8 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
             view.spinner_invoice_type.adapter = spinnerAdapter
             val defaultValue = spinnerAdapter?.getPosition(invoiceItem.type?.displayName)
             defaultValue?.let {
-                Log.d("lala default value", "${it}")
                 view.spinner_invoice_type.setSelection(defaultValue)
             }
-            //view.spinner_item.setText("testing")
-            //view.spinner_invoice_type.spinner_item_error.setTextColor(ContextCompat.getColor(context, R.color.colorDisabled))
-
 
             view.item_text.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable?) {

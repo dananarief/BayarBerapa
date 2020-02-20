@@ -8,7 +8,7 @@ object Constant {
 object TrackerEvent {
     const val openAboutApps = "uploadInvoicePage_aboutapps"
     const val chooseImageOnUploadInvoice = "uploadInvoicePage_chooseImage"
-    const val deleteImageOnUploadInvoice = "iploadInvoicePage_deleteImage"
+    const val deleteImageOnUploadInvoice = "uploadInvoicePage_deleteImage"
     const val processImageOnUploadInvoice = "uploadInvoicePage_processImage"
     const val changeItemNameOnPreviewPage = "previewPage_changeItemName"
     const val changePriceTextOnPreviewPage = "previewPage_changePriceText"
@@ -30,5 +30,14 @@ object TrackerEvent {
     const val errorPermissionDenied = "uploadInvoicePage_errorPermissionDenied"
     const val adsShowOnUploadInvoicePage = "uploadingInvoicePage_adsShow"
     const val adsFailToLoadOnUploadInvoicePage = "uploadingInvoicePage_adsFailtoLoad"
+    const val adsClickedOnUploadInvoicePage = "uploadingInvoicePage_adsClicked"
+    const val adsImpressionOnUploadInvoicePage = "uploadingInvoicePage_adsImpression"
+    const val adsLeftOnUploadInvoicePage = "uploadingInvoicePage_adsLeftApp"
+
+    const val adsShowOnInvoiceListResult = "invoiceListResult_adsShow"
+    const val adsFailToLoadOnInvoiceListResult = "invoiceListResult_adsFailtoLoad"
+    const val adsClickedOnInvoiceListResult = "invoiceListResult_adsClicked"
+    const val adsImpressionOnInvoiceListResult = "invoiceListResult_adsImpression"
+    const val adsLeftOnInvoiceListResult = "invoiceListResult_adsLeftApp"
 
 }

@@ -139,7 +139,7 @@ class Grab: InvoiceITF, Serializable {
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
                 for (element in line.elements) {
-                    Log.d("create element", "${element.text} ${element.boundingBox}")
+                    //Log.d("create element", "${element.text} ${element.boundingBox}")
                     element?.boundingBox?.let {
                         val rect = it
                         if (isFrameInsideScope(rect, frameScope)) {
@@ -167,7 +167,7 @@ class Grab: InvoiceITF, Serializable {
             for (line in block.lines) {
                 line.boundingBox?.let {
                     val rect = it
-                    Log.d("line text","${line.text}")
+                    //Log.d("line text","${line.text}")
                     if (isFrameInsideScope(rect, frameScope)) {
                         for ((k, _) in invoiceItems) {
                             if (isFrameConsideredAsOneLine(rect,k)) {
@@ -221,7 +221,6 @@ class Grab: InvoiceITF, Serializable {
         for (invoiceItem in invoiceItems) {
             if (invoiceItem.type == InvoiceItem.InvoiceType.TAX) {
                 taxPercentage = invoiceItem.price / subTotal
-                Log.d("taxpercent","a${taxPercentage}")
             }
 
             if (invoiceItem.type == InvoiceItem.InvoiceType.DISCOUNT) {
@@ -254,7 +253,7 @@ class Grab: InvoiceITF, Serializable {
 
         for (item in this.invoiceItems ) {
             println("${item.rect} ${item.getPriceForDebug()}")
-            Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
+            //Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
         }
 
         return invoiceItems
@@ -266,7 +265,6 @@ class Grab: InvoiceITF, Serializable {
 
     //check if format is 1x, 11x which how grab invoice write quantity in their invoice
     private fun extractQuantityTextToDouble(elementText: String): Double? {
-        Log.d("check qty",elementText)
         if (elementText.contains("x", ignoreCase = true)) {
             //stripped x
             var strippedText = elementText.replace("x","")

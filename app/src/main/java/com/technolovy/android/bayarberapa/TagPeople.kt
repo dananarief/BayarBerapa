@@ -69,7 +69,6 @@ class TagPeople : AppCompatActivity() {
     private fun editRecipient(position: Int) {
         sendTracker(TrackerEvent.editRecipeintOnRecipientListPage, this)
         val intent = Intent(this, AddRecepientForm::class.java)
-        Log.d("editPosition",position.toString())
         intent.putExtra("editId",position)
         startActivityForResult(intent, GO_TO_ADD_RECIPIENT)
     }

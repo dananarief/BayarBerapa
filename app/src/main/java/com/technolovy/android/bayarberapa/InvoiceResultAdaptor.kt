@@ -34,9 +34,7 @@ class InvoiceResultAdaptor(private var invoiceItems:List<InvoiceItem>): Recycler
             this.item = invoiceItem
             view.item_text.text = invoiceItem.name
 
-            Log.d("actual val","${invoiceItem.pricePerUnit}")
             val roundoff = roundOffDecimal(invoiceItem.pricePerUnit)
-            Log.d("actual round","${roundoff}")
             val pricethousand = NumberFormat.getNumberInstance(Locale.US).format(roundoff)
 
             view.price_text.text = pricethousand

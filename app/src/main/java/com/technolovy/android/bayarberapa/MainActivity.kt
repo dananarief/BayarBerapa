@@ -7,14 +7,12 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -36,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private var firebaseAnalytics: FirebaseAnalytics? = null
     private lateinit var interstitialAds: InterstitialAd
     private var firebaseVisionText: FirebaseVisionText? = null
+    private var isAdsLoaded: Boolean = false
 
     //loading state
     private var isImageLoading: Boolean = false
@@ -77,6 +76,50 @@ class MainActivity : AppCompatActivity() {
 
         //this is the testing ads id
         interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+
+        interstitialAds.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                isAdsLoaded = true
+            }
+
+            override fun onAdClosed() {
+                super.onAdClosed()
+                interstitialAds.loadAd(AdRequest.Builder().build())
+                if (invoice != null && isAdsLoaded) {
+                    processButton()
+                } else if (!isAdsLoaded) {
+                    Toast.makeText(this@MainActivity, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onAdFailedToLoad(p0: Int) {
+                super.onAdFailedToLoad(p0)
+                sendTracker(TrackerEvent.adsFailToLoadOnUploadInvoicePage,this@MainActivity)
+                isAdsLoaded = false
+            }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                sendTracker(TrackerEvent.adsShowOnUploadInvoicePage, this@MainActivity)
+            }
+
+            override fun onAdClicked() {
+                super.onAdClicked()
+                sendTracker(TrackerEvent.adsClickedOnUploadInvoicePage, this@MainActivity)
+            }
+
+            override fun onAdImpression() {
+                super.onAdImpression()
+                sendTracker(TrackerEvent.adsImpressionOnUploadInvoicePage, this@MainActivity)
+            }
+
+            override fun onAdLeftApplication() {
+                super.onAdLeftApplication()
+                sendTracker(TrackerEvent.adsLeftOnUploadInvoicePage, this@MainActivity)
+            }
+        }
+
         interstitialAds.loadAd(AdRequest.Builder().build())
     }
 
@@ -85,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             if (invoice == null) {
                 chooseButton()
             } else {
-                processButton()
+                interstitialAds.show()
             }
         }
     }
@@ -112,14 +155,6 @@ class MainActivity : AppCompatActivity() {
         InvoiceManager.invoiceOnScreen = invoice
         InvoiceManager.firebaseVisionText = firebaseVisionText
         InvoiceManager.invoiceImg = invoiceImageUri
-
-        //comment when developing to avoid fraud
-        if (interstitialAds.isLoaded) {
-            sendTracker(TrackerEvent.adsShowOnUploadInvoicePage, this)
-            interstitialAds.show()
-        } else {
-            sendTrackerError(TrackerEvent.adsFailToLoadOnUploadInvoicePage, this, "fait to load ads")
-        }
 
         startActivityForResult(intent, GO_TO_PREVIEW_SCREEN)
     }
