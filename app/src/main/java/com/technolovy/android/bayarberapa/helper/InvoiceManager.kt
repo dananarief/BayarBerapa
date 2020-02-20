@@ -10,4 +10,5 @@ object InvoiceManager {
     var firebaseVisionText: FirebaseVisionText? = null
     var recipientList = ArrayList<Recipient>()
     var invoiceImg: Uri? = null
+    var journeyId: String = ""
 }

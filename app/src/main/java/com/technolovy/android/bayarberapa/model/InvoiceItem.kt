@@ -7,7 +7,7 @@ import java.io.Serializable
 
 class InvoiceItem() : Serializable, Parcelable {
     var name: String = ""
-    var quantity: Double = -1.0
+    var quantity: Double = 0.0
     //if qty is 2, then this is price for 2 items
     // dont use price to show in display
     // use pricePerUnitInstead

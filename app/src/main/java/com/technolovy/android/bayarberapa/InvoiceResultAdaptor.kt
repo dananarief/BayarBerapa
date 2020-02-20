@@ -15,7 +15,7 @@ import java.util.*
 class InvoiceResultAdaptor(private var invoiceItems:List<InvoiceItem>): RecyclerView.Adapter<InvoiceResultAdaptor.InvoiceHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InvoiceHolder {
         val inflatedView = parent.inflate(R.layout.invoice_list_result_item, false)
-        return InvoiceHolder(inflatedView)
+        return InvoiceHolder(inflatedView, parent.context)
     }
 
     override fun getItemCount(): Int {
@@ -27,16 +27,14 @@ class InvoiceResultAdaptor(private var invoiceItems:List<InvoiceItem>): Recycler
         holder.bindInvoiceItem(invoiceItem)
     }
 
-    class InvoiceHolder(private var view: View): RecyclerView.ViewHolder(view) {
+    class InvoiceHolder(private var view: View, var context: Context): RecyclerView.ViewHolder(view) {
         private var item: InvoiceItem? = null
 
         fun bindInvoiceItem(invoiceItem: InvoiceItem) {
             this.item = invoiceItem
             view.item_text.text = invoiceItem.name
 
-            Log.d("actual val","${invoiceItem.pricePerUnit}")
             val roundoff = roundOffDecimal(invoiceItem.pricePerUnit)
-            Log.d("actual round","${roundoff}")
             val pricethousand = NumberFormat.getNumberInstance(Locale.US).format(roundoff)
 
             view.price_text.text = pricethousand

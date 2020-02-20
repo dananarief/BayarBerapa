@@ -1,6 +1,7 @@
 package com.technolovy.android.bayarberapa
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,6 +9,8 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.TrackerEvent
+import com.technolovy.android.bayarberapa.helper.sendTracker
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import com.technolovy.android.bayarberapa.model.Recipient
 import com.technolovy.android.bayarberapa.model.RecipientOrder
@@ -64,14 +67,15 @@ class TagPeople : AppCompatActivity() {
     }
 
     private fun editRecipient(position: Int) {
+        sendTracker(TrackerEvent.editRecipeintOnRecipientListPage, this)
         val intent = Intent(this, AddRecepientForm::class.java)
-        Log.d("editPosition",position.toString())
         intent.putExtra("editId",position)
         startActivityForResult(intent, GO_TO_ADD_RECIPIENT)
     }
 
     private fun setupButton() {
         button_add_tag_people.setOnClickListener {
+            sendTracker(TrackerEvent.addRecipeintOnRecipientListPage, this)
             val intent = Intent(this, AddRecepientForm::class.java)
             startActivityForResult(intent, GO_TO_ADD_RECIPIENT)
         }

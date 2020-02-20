@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.TrackerEvent
+import com.technolovy.android.bayarberapa.helper.sendTracker
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import com.technolovy.android.bayarberapa.model.Recipient
 import com.technolovy.android.bayarberapa.model.RecipientOrder
@@ -71,6 +73,7 @@ class AddRecepientForm : AppCompatActivity() {
     private fun setupButton() {
         button_add_recipient.setOnClickListener {
             if (isFormValid()) {
+                sendTracker(TrackerEvent.saveRecipeintOnRecipeintFormPage, this)
                 recipient?.name = autoCompleteTextView.text.toString()
                 recipient?.let {
                     if (isEditMode) {

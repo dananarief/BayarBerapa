@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.ml.vision.text.FirebaseVisionText
 import com.technolovy.android.bayarberapa.helper.InvoiceManager
+import com.technolovy.android.bayarberapa.helper.TrackerEvent
+import com.technolovy.android.bayarberapa.helper.sendTracker
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.activity_invoice_list_preview.*
@@ -45,6 +47,7 @@ class InvoiceListPreview : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             if (item.itemId == R.id.preview_page_more_menu) {
+                sendTracker(TrackerEvent.seeInformationPageonPreviewPage, this)
                 val intent = Intent(this, PreviewInfoActivity::class.java)
                 startActivity(intent)
             }
@@ -104,10 +107,21 @@ class InvoiceListPreview : AppCompatActivity() {
         button_calculate.setOnClickListener {
             processButton()
         }
+
+        button_add_invoice_item.setOnClickListener {
+            sendTracker(TrackerEvent.addItemonPreviewPage, this)
+            val newItem = InvoiceItem()
+            newItem.quantity = 1.0
+            newItem.price = 0.0
+            newItem.type = InvoiceItem.InvoiceType.PURCHASEITEM
+            invoiceItemsResult.add(0, newItem)
+            recycler_view.adapter?.notifyDataSetChanged()
+        }
     }
 
     private fun setupCheckImageText() {
         picture_text.setOnClickListener {
+            sendTracker(TrackerEvent.seeInvoiceOnPreviewPage, this)
             val intent = Intent(this, ImageDetailActivity::class.java)
             startActivity(intent)
         }
@@ -115,6 +129,7 @@ class InvoiceListPreview : AppCompatActivity() {
 
     private fun processButton() {
         if (isListValid()) {
+            sendTracker(TrackerEvent.calculateOnPreviewPage, this)
             val intent = Intent(this, InvoiceListResult::class.java)
             InvoiceManager.invoiceOnScreen = invoice
             InvoiceManager.firebaseVisionText = firebaseVisionText
@@ -129,13 +144,11 @@ class InvoiceListPreview : AppCompatActivity() {
             isValid = true
             for (item in it) {
                 if (item.name.isEmpty()) {
-                    Log.d("valid","ada yang gak valid nama")
                     Toast.makeText(this, "Terdapat nama item yang kosong", Toast.LENGTH_LONG).show()
                     return false
                 }
 
                 if (item.type == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
-                    Log.d("valid","ada yang gak valid tipe")
                     Toast.makeText(this, "Terdapat tipe item yang kosong", Toast.LENGTH_LONG).show()
                     return false
                 }

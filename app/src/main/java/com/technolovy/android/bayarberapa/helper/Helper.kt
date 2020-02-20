@@ -1,10 +1,13 @@
 package com.technolovy.android.bayarberapa.helper
 
+import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import com.google.firebase.analytics.FirebaseAnalytics
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -38,7 +41,7 @@ fun isPrice(text: String): Boolean {
 
 fun extractPriceToDouble(text: String): Double? {
     var checkText = text
-    Log.d("check price","${checkText}")
+
     checkText = checkText.replace("Rp", "")
     checkText = checkText.replace(".", "")
     checkText = checkText.replace(",", "")
@@ -56,4 +59,25 @@ fun roundOffDecimal(number: Double): Double? {
     val df = DecimalFormat("###.###")
     df.roundingMode = RoundingMode.HALF_EVEN
     return df.format(number).toDouble()
+}
+
+fun sendTracker(eventName: String, activity: Context) {
+    val bundle = Bundle()
+    val currentTime = Calendar.getInstance().time
+    bundle.putString("journey_id", InvoiceManager.journeyId)
+    bundle.putString("click_time", currentTime.toString())
+    bundle.putString("app_version", Constant.AppsVersion)
+
+    FirebaseAnalytics.getInstance(activity).logEvent(eventName, bundle)
+}
+
+fun sendTrackerError(eventName: String, activity: Context, error: String) {
+    val bundle = Bundle()
+    val currentTime = Calendar.getInstance().time
+    bundle.putString("journey_id", InvoiceManager.journeyId)
+    bundle.putString("click_time", currentTime.toString())
+    bundle.putString("app_version", Constant.AppsVersion)
+    bundle.putString("error_client", error)
+
+    FirebaseAnalytics.getInstance(activity).logEvent(eventName, bundle)
 }

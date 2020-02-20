@@ -12,8 +12,10 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.technolovy.android.bayarberapa.helper.TrackerEvent
 import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
 import com.technolovy.android.bayarberapa.helper.inflate
+import com.technolovy.android.bayarberapa.helper.sendTracker
 import com.technolovy.android.bayarberapa.model.InvoiceItem
 import kotlinx.android.synthetic.main.custom_spinner_item.view.*
 import kotlinx.android.synthetic.main.custom_spinner_item_error.view.*
@@ -35,6 +37,13 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
     override fun onBindViewHolder(holder: InvoiceHolder, position: Int) {
         val invoiceItem = invoiceItems[position]
         holder.bindInvoiceItem(invoiceItem)
+        holder.itemView.delete_button.setOnClickListener {
+            sendTracker(TrackerEvent.deleteItemonPreviewPage, holder.context)
+            invoiceItems.removeAt(position)
+            notifyDataSetChanged()
+        }
+
+
         holder.itemView.spinner_invoice_type.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
@@ -46,6 +55,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                 position: Int,
                 id: Long
             ) {
+                sendTracker(TrackerEvent.changeTypeOnPreviewPage, holder.context)
                 val selectedDropdown = parent?.getItemAtPosition(position).toString()
                 val enumBasedOnDropdown = InvoiceItem.InvoiceType.values().firstOrNull {
                     it.displayName == selectedDropdown
@@ -61,12 +71,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                     view?.spinner_item?.setTextColor(ContextCompat.getColor(holder.context,R.color.colorPrimary))
                 }
 
-                //(parent?.getChildAt(position) as TextView).setTextColor(ContextCompat.getColor(holder.context,R.color.colorDisabled))
-                //view.spinner_invoice_type.spinner_item.setTextColor(ContextCompat.getColor(holder.,R.color.colorDisabled))
-                //holder.spinnerAdapter.st
-//                if (enumBasedOnDropdown == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
-//                    holder.bindInvoiceItem(invoiceItem)
-//                }
+                holder.itemView.qty?.isEnabled = invoiceItem.type == InvoiceItem.InvoiceType.PURCHASEITEM
             }
         }
     }
@@ -84,16 +89,13 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.price_text.setText(priceWithoutDecimal)
 
+            val qtyWithoutDecimal = format.format(invoiceItem.quantity)
+            view.qty.setText(qtyWithoutDecimal)
 
-            Log.d("change","name ${invoiceItem.name}")
-            Log.d("change","price ${invoiceItem.price.toString()}")
-            Log.d("change","name show ${view.item_text.text}")
-            Log.d("change","price show ${view.price_text.text}")
+            view.qty.isEnabled = invoiceItem.type == InvoiceItem.InvoiceType.PURCHASEITEM
 
             var resourceLayout: Int = R.layout.custom_spinner_item
-            if (invoiceItem.type == InvoiceItem.InvoiceType.NOTRECOGNIZED) {
-                //resourceLayout = R.layout.custom_spinner_item_error
-            }
+
             spinnerAdapter = ArrayAdapter.createFromResource(
                 context,
                 R.array.invoice_type_array,
@@ -103,24 +105,19 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
             view.spinner_invoice_type.adapter = spinnerAdapter
             val defaultValue = spinnerAdapter?.getPosition(invoiceItem.type?.displayName)
             defaultValue?.let {
-                Log.d("lala default value", "${it}")
                 view.spinner_invoice_type.setSelection(defaultValue)
             }
-            //view.spinner_item.setText("testing")
-            //view.spinner_invoice_type.spinner_item_error.setTextColor(ContextCompat.getColor(context, R.color.colorDisabled))
-
 
             view.item_text.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    Log.d("otc","after ${s.toString()}")
+                    sendTracker(TrackerEvent.changeItemNameOnPreviewPage, context)
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                    Log.d("otc","before ${s.toString()}")
+
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d("otc"," original ${invoiceItem.name} ${s.toString()} ${start} ${before} ${count}")
                     item?.name = s.toString()
                 }
 
@@ -129,7 +126,7 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
 
             view.price_text.addTextChangedListener(object: TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-
+                    sendTracker(TrackerEvent.changePriceTextOnPreviewPage, context)
                 }
 
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -142,7 +139,23 @@ class InvoicePreviewAdaptor(private var invoiceItems: ArrayList<InvoiceItem>): R
                         item?.price = it
                     }
                 }
+            })
 
+            view.qty.addTextChangedListener(object: TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    sendTracker(TrackerEvent.changeQtyOnPreviewPage, context)
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    val newQty = s.toString().toDoubleOrNull()
+                    newQty?.let {
+                        item?.quantity = it
+                    }
+                }
             })
         }
     }

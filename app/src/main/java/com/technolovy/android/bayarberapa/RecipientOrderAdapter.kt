@@ -34,7 +34,6 @@ class RecipientOrderAdapter(private var recipientOrders:ArrayList<RecipientOrder
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d("qty info", "ontextchanged")
                 recipientOrder.buyQty = s.toString().toDouble()
             }
 

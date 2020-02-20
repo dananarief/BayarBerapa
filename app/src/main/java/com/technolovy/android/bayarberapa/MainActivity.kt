@@ -7,14 +7,12 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -22,8 +20,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.text.FirebaseVisionText
-import com.technolovy.android.bayarberapa.helper.InvoiceManager
-import com.technolovy.android.bayarberapa.helper.extractPriceToDouble
+import com.technolovy.android.bayarberapa.helper.*
 import com.technolovy.android.bayarberapa.model.Grab
 import com.technolovy.android.bayarberapa.model.InvoiceITF
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private var firebaseAnalytics: FirebaseAnalytics? = null
     private lateinit var interstitialAds: InterstitialAd
     private var firebaseVisionText: FirebaseVisionText? = null
+    private var isAdsLoaded: Boolean = false
 
     //loading state
     private var isImageLoading: Boolean = false
@@ -44,8 +42,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        InvoiceManager.journeyId = UUID.randomUUID().toString()
         firebaseAnalytics = FirebaseAnalytics.getInstance(this)
-        //setMobsAds()
+        setMobsAds()
         setImageInfoTextListener()
         setButtonListener()
         setPersonQtyPicker()
@@ -60,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         item?.let {
             if (item.itemId == R.id.more_menu) {
+                sendTracker(TrackerEvent.openAboutApps, this)
                 val intent = Intent(this, AboutAppsActivity::class.java)
                 startActivity(intent)
             }
@@ -76,30 +76,66 @@ class MainActivity : AppCompatActivity() {
 
         //this is the testing ads id
         interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
-        interstitialAds.loadAd(AdRequest.Builder().build())
-    }
 
-    private fun testSentTracker() {
-        val bundle = Bundle()
-        val currentTime = Calendar.getInstance().time
-        bundle.putString("click_time", currentTime.toString())
-        bundle.putString("app_version", "0.1")
-        firebaseAnalytics?.logEvent("choose_image",bundle)
+        interstitialAds.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                super.onAdLoaded()
+                isAdsLoaded = true
+            }
+
+            override fun onAdClosed() {
+                super.onAdClosed()
+                interstitialAds.loadAd(AdRequest.Builder().build())
+                if (invoice != null && isAdsLoaded) {
+                    processButton()
+                } else if (!isAdsLoaded) {
+                    Toast.makeText(this@MainActivity, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onAdFailedToLoad(p0: Int) {
+                super.onAdFailedToLoad(p0)
+                sendTracker(TrackerEvent.adsFailToLoadOnUploadInvoicePage,this@MainActivity)
+                isAdsLoaded = false
+            }
+
+            override fun onAdOpened() {
+                super.onAdOpened()
+                sendTracker(TrackerEvent.adsShowOnUploadInvoicePage, this@MainActivity)
+            }
+
+            override fun onAdClicked() {
+                super.onAdClicked()
+                sendTracker(TrackerEvent.adsClickedOnUploadInvoicePage, this@MainActivity)
+            }
+
+            override fun onAdImpression() {
+                super.onAdImpression()
+                sendTracker(TrackerEvent.adsImpressionOnUploadInvoicePage, this@MainActivity)
+            }
+
+            override fun onAdLeftApplication() {
+                super.onAdLeftApplication()
+                sendTracker(TrackerEvent.adsLeftOnUploadInvoicePage, this@MainActivity)
+            }
+        }
+
+        interstitialAds.loadAd(AdRequest.Builder().build())
     }
 
     private fun setButtonListener() {
         button_choose_image.setOnClickListener {
-            testSentTracker()
             if (invoice == null) {
                 chooseButton()
             } else {
-                processButton()
+                interstitialAds.show()
             }
         }
     }
 
     private fun setImageInfoTextListener() {
         place_holder_text.setOnClickListener {
+            sendTracker(TrackerEvent.deleteImageOnUploadInvoice,this)
             if (invoice != null) {
                 invoice = null
                 invoiceImageUri = null
@@ -113,6 +149,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun processButton() {
+        sendTracker(TrackerEvent.processImageOnUploadInvoice,this)
         val intent = Intent(this, InvoiceListPreview::class.java)
         invoice?.numOfPerson = person
         InvoiceManager.invoiceOnScreen = invoice
@@ -123,6 +160,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun chooseButton() {
+        sendTracker(TrackerEvent.chooseImageOnUploadInvoice,this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 //permission denied
@@ -165,6 +203,7 @@ class MainActivity : AppCompatActivity() {
                     setInvoiceBasedOnBrand(firebaseVisionText)
                 }
                 .addOnFailureListener { e ->
+                    sendTrackerError(TrackerEvent.errorProcessImage, this, e.toString())
                     Toast.makeText(
                         this,
                         "Aplikasi Masih Menyiapkan Data, Mohon Coba beberapa saat lagi",
@@ -179,6 +218,7 @@ class MainActivity : AppCompatActivity() {
         try {
             image = FirebaseVisionImage.fromFilePath(this, imgUri)
         } catch (e: IOException) {
+            sendTrackerError(TrackerEvent.errorVisionImage, this, e.toString())
             e.printStackTrace()
         }
         return image
@@ -190,8 +230,10 @@ class MainActivity : AppCompatActivity() {
             invoice = Grab()
         } else if (firebaseText.text.contains("gojek", ignoreCase = true)) {
             //todo: init gojek
+            sendTrackerError(TrackerEvent.errorRecognizeBrand, this, "brand gojek")
             //implement later
         } else {
+            sendTrackerError(TrackerEvent.errorRecognizeBrand, this, "brand not found")
             Toast.makeText(
                 this,
                 "Mohon maaf, invoice belum dikenali. Silakan gunakan fitur manual", Toast.LENGTH_LONG
@@ -209,6 +251,7 @@ class MainActivity : AppCompatActivity() {
                     //permission from popup granted
                     pickImageFromGallery()
                 } else {
+                    sendTrackerError(TrackerEvent.errorPermissionDenied, this, "permission not granted")
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -220,13 +263,6 @@ class MainActivity : AppCompatActivity() {
 
             invoiceImageUri = data?.data
             render()
-            //comment when developing to avoid fraud
-//            if (interstitialAds.isLoaded) {
-//                //interstitialAds.show()
-//            } else {
-//                //tracker ads fail to load
-//                Log.d("tracker", "fail to load")
-//            }
             isImageLoading = true
             render()
             data?.data?.let { recognizeText(it) }

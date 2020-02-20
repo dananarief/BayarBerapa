@@ -57,14 +57,14 @@ class Grab: InvoiceITF, Serializable {
             for (line in block.lines) {
 
                 //make bottom frame order summary as starting point
-                if (line.text.equals("order summary", ignoreCase = true)) {
+                if (line.text.contains("order summary",ignoreCase = true)) {
                     line.boundingBox?.bottom?.let {
                         frameScope.top = it
                     }
                 }
 
                 //make top frame Total as end point
-                if (line.text.equals("total", ignoreCase = true)) {
+                if ((line.text.contains("total",ignoreCase = true)) && !line.text.contains("subtotal", ignoreCase = true)) {
                     line.boundingBox?.top?.let {
                         frameScope.bottom = it
                     }
@@ -103,6 +103,17 @@ class Grab: InvoiceITF, Serializable {
         val invoiceItems = hashMapOf<Rect, InvoiceItem>()
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
+//                line.boundingBox?.let {
+//                    val rect = it
+//                    if (isFrameInsideScope(rect, frameScope)) {
+//                        val priceWithDoubleFormat = extractPriceToDouble(line.text)
+//                        priceWithDoubleFormat?.let { doublePrice ->
+//                            //if the text is price, save the frame as key to the map
+//                            invoiceItems[rect] = InvoiceItem(rect, doublePrice)
+//                        }
+//                    }
+//                }
+
                 for (element in line.elements) {
                     element?.boundingBox?.let {
                         val rect = it
@@ -117,6 +128,8 @@ class Grab: InvoiceITF, Serializable {
                 }
             }
         }
+
+
         return invoiceItems
     }
 
@@ -126,7 +139,7 @@ class Grab: InvoiceITF, Serializable {
         for (block in firebaseText.textBlocks) {
             for (line in block.lines) {
                 for (element in line.elements) {
-                    Log.d("create element", "${element.text} ${element.boundingBox}")
+                    //Log.d("create element", "${element.text} ${element.boundingBox}")
                     element?.boundingBox?.let {
                         val rect = it
                         if (isFrameInsideScope(rect, frameScope)) {
@@ -154,7 +167,7 @@ class Grab: InvoiceITF, Serializable {
             for (line in block.lines) {
                 line.boundingBox?.let {
                     val rect = it
-
+                    //Log.d("line text","${line.text}")
                     if (isFrameInsideScope(rect, frameScope)) {
                         for ((k, _) in invoiceItems) {
                             if (isFrameConsideredAsOneLine(rect,k)) {
@@ -182,7 +195,7 @@ class Grab: InvoiceITF, Serializable {
             } else if (v.name.contains("delivery fee", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
-                v.type = InvoiceItem.InvoiceType.SHARED_FEE
+                v.type = InvoiceItem.InvoiceType.TAX
             } else if (v.name.contains("subtotal", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SUBTOTAL
             }else {
@@ -208,7 +221,6 @@ class Grab: InvoiceITF, Serializable {
         for (invoiceItem in invoiceItems) {
             if (invoiceItem.type == InvoiceItem.InvoiceType.TAX) {
                 taxPercentage = invoiceItem.price / subTotal
-                Log.d("taxpercent","a${taxPercentage}")
             }
 
             if (invoiceItem.type == InvoiceItem.InvoiceType.DISCOUNT) {
@@ -241,7 +253,7 @@ class Grab: InvoiceITF, Serializable {
 
         for (item in this.invoiceItems ) {
             println("${item.rect} ${item.getPriceForDebug()}")
-            Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
+            //Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
         }
 
         return invoiceItems
@@ -253,7 +265,6 @@ class Grab: InvoiceITF, Serializable {
 
     //check if format is 1x, 11x which how grab invoice write quantity in their invoice
     private fun extractQuantityTextToDouble(elementText: String): Double? {
-        Log.d("check qty",elementText)
         if (elementText.contains("x", ignoreCase = true)) {
             //stripped x
             var strippedText = elementText.replace("x","")
