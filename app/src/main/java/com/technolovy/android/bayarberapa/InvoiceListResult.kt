@@ -61,10 +61,10 @@ class InvoiceListResult : AppCompatActivity() {
         MobileAds.initialize(this, "ca-app-pub-8342384986875866~7993633723")
         interstitialAds = InterstitialAd(this)
         //this is the real ads unit id
-        //interstitialAds.adUnitId = "ca-app-pub-8342384986875866/6260436572"
+        interstitialAds.adUnitId = "ca-app-pub-8342384986875866/6260436572"
 
         //this is the testing ads id
-        interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        //interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
 
         interstitialAds.adListener = object: AdListener() {
             override fun onAdLoaded() {
