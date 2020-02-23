@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
     private fun setImageInfoTextListener() {
         place_holder_text.setOnClickListener {
             sendTracker(TrackerEvent.deleteImageOnUploadInvoice,this)
-            if (invoice != null) {
+            if ((invoice != null) || ((invoice == null) &&(invoiceImageUri != null))) {
                 invoice = null
                 invoiceImageUri = null
                 InvoiceManager.invoiceImg = null
@@ -234,9 +234,10 @@ class MainActivity : AppCompatActivity() {
             //implement later
         } else {
             sendTrackerError(TrackerEvent.errorRecognizeBrand, this, "brand not found")
+            invoice = null
             Toast.makeText(
                 this,
-                "Mohon maaf, invoice belum dikenali. Silakan gunakan fitur manual", Toast.LENGTH_LONG
+                "Mohon maaf, invoice belum dikenali", Toast.LENGTH_LONG
             ).show()
         }
 
@@ -284,7 +285,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderImageInfoText() {
-        if (invoice == null) {
+        if (invoice == null && invoiceImageUri == null) {
             place_holder_text.text = "Silakan ulpload invoice Grab mu..."
             place_holder_text.setTextColor(ContextCompat.getColor(this,android.R.color.tab_indicator_text))
         } else {
