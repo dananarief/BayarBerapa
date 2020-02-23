@@ -207,7 +207,7 @@ class Grab: InvoiceITF, Serializable {
     override fun calculate(invoiceItems: ArrayList<InvoiceItem>): ArrayList<InvoiceItem> {
         //will set invoice item pricePerUnit attribute
         var subTotal = 0.0
-        var taxPercentage = 0.0
+        var taxPercentage = ArrayList<Double>()
         var discountPercentage = 0.0
 
         //get info about subtotal
@@ -220,8 +220,10 @@ class Grab: InvoiceITF, Serializable {
         //get info about tax percentage and discount percentage
         for (invoiceItem in invoiceItems) {
             if (invoiceItem.type == InvoiceItem.InvoiceType.TAX) {
-                taxPercentage = invoiceItem.price / subTotal
+                val percentage = invoiceItem.price / subTotal
+                taxPercentage.add(percentage)
             }
+
 
             if (invoiceItem.type == InvoiceItem.InvoiceType.DISCOUNT) {
                 discountPercentage = abs(invoiceItem.price) / subTotal
@@ -235,10 +237,13 @@ class Grab: InvoiceITF, Serializable {
 
                 val discountPriceperQty: Double = pricePerQuantity * discountPercentage
 
-                val taxPricePerQty: Double = pricePerQuantity * taxPercentage
-
                 var resultPricePerUnit = pricePerQuantity
-                resultPricePerUnit += taxPricePerQty
+
+                for (percentage in taxPercentage) {
+                    val taxPricePerQty: Double = pricePerQuantity * percentage
+                    resultPricePerUnit += taxPricePerQty
+                }
+
                 resultPricePerUnit -= discountPriceperQty
 
                 invoiceItem.pricePerUnit = resultPricePerUnit
@@ -253,7 +258,7 @@ class Grab: InvoiceITF, Serializable {
 
         for (item in this.invoiceItems ) {
             println("${item.rect} ${item.getPriceForDebug()}")
-            //Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
+            Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
         }
 
         return invoiceItems
