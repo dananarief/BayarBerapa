@@ -4,7 +4,8 @@
         <item>Not Recognized</item>
         <item>Purchase</item>
         <item>Discount</item>
-        <item>Tax</item>
+        <item>Additional Tax</item>
+        <item>Include Tax</item>
         <item>Shared Fee</item>
         <item>Subtotal</item>
     </string-array>

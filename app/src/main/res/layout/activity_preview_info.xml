@@ -69,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
-                    android:text="4. Tax: Penambahan harga pajak untuk item yang dibeli"
+                    android:text="4. Additional Tax: Penambahan harga pajak untuk item yang dibeli"
                     android:padding="4dp"
                     android:layout_marginLeft="24dp"
                     android:layout_marginRight="24dp" />
@@ -79,7 +79,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="12sp"
+                    android:text="4. Include Tax: Pajak yang sudah termasuk pada harga barang, tidak akan diikutkan lagi dalam penghtungan"
+                    android:padding="4dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp" />
+
+            <TextView
+                    android:id="@+id/item_6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
                     android:text="5. Shared Fee: Biaya yang ditanggung bersama seperti biaya pengiriman"
+                    android:padding="4dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp" />
+
+            <TextView
+                    android:id="@+id/item_7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:text="Rumus perhitungan yang digunakan adalah dengan menentukan persentase tax dan diskon, kemudian menghitung setiap harga item dengan persentase tersebt"
+                    android:padding="4dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="24dp" />
+
+            <TextView
+                    android:id="@+id/item_8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:text="Menggunakan pembulatan RoundingMode.HALF_EVEN "
                     android:padding="4dp"
                     android:layout_marginLeft="24dp"
                     android:layout_marginRight="24dp" />

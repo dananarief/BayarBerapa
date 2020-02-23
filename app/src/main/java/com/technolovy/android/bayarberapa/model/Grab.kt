@@ -185,13 +185,21 @@ class Grab: InvoiceITF, Serializable {
     }
 
     private fun fillTypeForInvoiceItems(invoiceItems: MutableMap<Rect, InvoiceItem>) {
-        for ((_, v) in invoiceItems) {
+        for ((k, v) in invoiceItems) {
             if (v.quantity > 0) {
                 v.type = InvoiceItem.InvoiceType.PURCHASEITEM
             } else if (v.name.contains("Promo",ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.DISCOUNT
             } else if (v.name.contains("tax", ignoreCase = true)) {
-                v.type = InvoiceItem.InvoiceType.TAX
+                if (v.name.contains("incl")) {
+                    //incl tax is already calculted into item price
+                    //invoiceItems.remove(k)
+                    v.name = "incl. tax (sudah dimasukkan di harga barang)"
+                    v.type = InvoiceItem.InvoiceType.AlreadyTAX
+                } else {
+                    v.name = "additional tax (akan ditambahkan saat perhitungan)"
+                    v.type = InvoiceItem.InvoiceType.TAX
+                }
             } else if (v.name.contains("delivery fee", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
@@ -335,7 +343,7 @@ class Grab: InvoiceITF, Serializable {
         }
 
         if (isTheMissingInvoiceTax) {
-            missingInvoiceInfo?.name = "tax"
+            missingInvoiceInfo?.name = "tax terpisah"
             missingInvoiceInfo?.type = InvoiceItem.InvoiceType.TAX
         }
     }
