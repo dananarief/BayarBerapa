@@ -300,6 +300,11 @@ class Grab: InvoiceITF, Serializable {
     }
 
     private fun improveResult(result: HashMap<Rect, InvoiceItem>) {
+        autoFillTax(result)
+        removeWrongKey(result)
+    }
+
+    private fun autoFillTax(result: HashMap<Rect, InvoiceItem>) {
 
         var missingInvoiceInfo: InvoiceItem? = null
 
@@ -345,6 +350,34 @@ class Grab: InvoiceITF, Serializable {
         if (isTheMissingInvoiceTax) {
             missingInvoiceInfo?.name = "tax terpisah"
             missingInvoiceInfo?.type = InvoiceItem.InvoiceType.TAX
+        }
+    }
+
+    //to handle something like "buy 20 get 20 10.000", and result in 3 items (10.000, 20, 20)
+    private fun removeWrongKey(result: HashMap<Rect, InvoiceItem>) {
+        var priceBound: Rect? = null
+
+        for ((_, v) in result) {
+            if (v.type == InvoiceItem.InvoiceType.SUBTOTAL) {
+                priceBound = v.rect
+                break
+            }
+        }
+
+
+        var keyToRemove = ArrayList<Rect>()
+        for ((_, v) in result) {
+            v.rect?.let { itemRect ->
+                priceBound?.let { boundRect ->
+                    if (itemRect.right < boundRect.left) {
+                        keyToRemove.add(itemRect)
+                    }
+                }
+            }
+        }
+
+        for (k in keyToRemove) {
+            result.remove(k)
         }
     }
 }
