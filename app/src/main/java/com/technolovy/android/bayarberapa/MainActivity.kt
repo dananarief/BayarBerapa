@@ -88,11 +88,7 @@ class MainActivity : AppCompatActivity() {
             override fun onAdClosed() {
                 super.onAdClosed()
                 interstitialAds.loadAd(AdRequest.Builder().build())
-                if (invoice != null && isAdsLoaded) {
-                    processButton()
-                } else if (!isAdsLoaded) {
-                    Toast.makeText(this@MainActivity, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
-                }
+                processButton()
             }
 
             override fun onAdFailedToLoad(p0: Int) {
@@ -130,7 +126,12 @@ class MainActivity : AppCompatActivity() {
             if (invoice == null) {
                 chooseButton()
             } else {
-                interstitialAds.show()
+                if (invoice != null && isAdsLoaded) {
+                    interstitialAds.show()
+                } else {
+                    sendTracker(TrackerEvent.adsFailToLoadWhenClickPrrocessButtonOnUploadInvoicePage, this@MainActivity)
+                    Toast.makeText(this@MainActivity, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

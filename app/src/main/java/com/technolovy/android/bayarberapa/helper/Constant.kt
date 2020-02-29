@@ -42,5 +42,6 @@ object TrackerEvent {
     const val adsClickedOnInvoiceListResult = "invoiceListResult_adsClicked"
     const val adsImpressionOnInvoiceListResult = "invoiceListResult_adsImpression"
     const val adsLeftOnInvoiceListResult = "invoiceListResult_adsLeftApp"
+    const val adsFailToLoadWhenClickTagFriendsOnInvoiceListResult = "invoiceListResult_adsFailtoLoadWhenClickTagFriends"
 
 }

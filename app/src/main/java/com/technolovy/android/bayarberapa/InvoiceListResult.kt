@@ -77,11 +77,7 @@ class InvoiceListResult : AppCompatActivity() {
             override fun onAdClosed() {
                 super.onAdClosed()
                 interstitialAds.loadAd(AdRequest.Builder().build())
-                if (invoice != null && isAdsLoaded) {
-                    goToRecipientList()
-                } else if (!isAdsLoaded) {
-                    Toast.makeText(this@InvoiceListResult, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
-                }
+                goToRecipientList()
             }
 
             override fun onAdFailedToLoad(p0: Int) {
@@ -140,7 +136,12 @@ class InvoiceListResult : AppCompatActivity() {
 
     private fun setupButton() {
         button_tag_people.setOnClickListener {
-            interstitialAds.show()
+            if (isAdsLoaded) {
+                interstitialAds.show()
+            } else {
+                sendTracker(TrackerEvent.adsFailToLoadWhenClickTagFriendsOnInvoiceListResult, this@InvoiceListResult)
+                Toast.makeText(this@InvoiceListResult, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
