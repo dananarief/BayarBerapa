@@ -289,7 +289,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun renderImageInfoText() {
         if (invoice == null && invoiceImageUri == null) {
-            place_holder_text.text = "Silakan ulpload invoice Grab mu..."
+            place_holder_text.text = "Silakan upload invoice Grab mu..."
             place_holder_text.setTextColor(ContextCompat.getColor(this,android.R.color.tab_indicator_text))
         } else {
             place_holder_text.text = "Hapus Gambar"
