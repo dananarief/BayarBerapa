@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                     interstitialAds.show()
                 } else {
                     sendTracker(TrackerEvent.adsFailToLoadWhenClickPrrocessButtonOnUploadInvoicePage, this@MainActivity)
-                    Toast.makeText(this@MainActivity, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, R.string.ads_fail_load_msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }

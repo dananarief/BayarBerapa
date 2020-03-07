@@ -1,9 +1,12 @@
 package com.technolovy.android.bayarberapa
 
 import android.content.Intent
+import android.content.SharedPreferences
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,9 +33,16 @@ class InvoiceListResult : AppCompatActivity() {
     private lateinit var interstitialAds: InterstitialAd
     private var isAdsLoaded: Boolean = false
 
+    private var privateMode = 0
+    private var prefName = "bayarBerapa"
+    var cache: SharedPreferences? = null
+    var isNeedShowAds = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_invoice_list_result)
+        cache = getSharedPreferences(prefName, privateMode)
+        updateCache()
         setMobsAds()
         setupRecyclerView()
         setupButton()
@@ -50,6 +60,7 @@ class InvoiceListResult : AppCompatActivity() {
 
     private fun render() {
         renderButton()
+        renderImage()
     }
 
     private fun retrievInfoFromInvoiceManager() {
@@ -72,6 +83,7 @@ class InvoiceListResult : AppCompatActivity() {
             override fun onAdLoaded() {
                 super.onAdLoaded()
                 isAdsLoaded = true
+                renderResult()
             }
 
             override fun onAdClosed() {
@@ -113,9 +125,19 @@ class InvoiceListResult : AppCompatActivity() {
     private fun processTheImage() {
         invoice?.invoiceItems?.let {
             invoice?.calculate(it)
+            renderResult()
+        }
+    }
+
+    fun renderResult() {
+        if (!isNeedShowAds || (isNeedShowAds && isAdsLoaded)) {
             setupRecyclerView()
             invoiceAdapter.notifyDataSetChanged()
-            isResultLoading = false
+            if (!isNeedShowAds) {
+                isResultLoading = false
+            } else {
+                isResultLoading = !isAdsLoaded
+            }
             render()
         }
     }
@@ -136,12 +158,32 @@ class InvoiceListResult : AppCompatActivity() {
 
     private fun setupButton() {
         button_tag_people.setOnClickListener {
-            if (isAdsLoaded) {
-                interstitialAds.show()
+            if (isNeedShowAds) {
+                if (isAdsLoaded) {
+                    interstitialAds.show()
+                } else {
+                    sendTracker(TrackerEvent.adsFailToLoadWhenClickTagFriendsOnInvoiceListResult, this@InvoiceListResult)
+                    Toast.makeText(this@InvoiceListResult, R.string.ads_fail_load_msg, Toast.LENGTH_SHORT).show()
+                }
             } else {
-                sendTracker(TrackerEvent.adsFailToLoadWhenClickTagFriendsOnInvoiceListResult, this@InvoiceListResult)
-                Toast.makeText(this@InvoiceListResult, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
+                goToRecipientList()
             }
+        }
+    }
+
+    private fun updateCache() {
+        val cacheKey = "adsOnInvoiceListResult"
+        cache?.let { sharedPreferences ->
+            val editor = sharedPreferences.edit()
+            var enterResultCount: Int = sharedPreferences.getInt(cacheKey, 0)
+            enterResultCount += 1
+            if (enterResultCount >= 3) {
+                isNeedShowAds = true
+                enterResultCount = 0
+            }
+
+            editor.putInt(cacheKey, enterResultCount)
+            editor.commit()
         }
     }
 
@@ -162,5 +204,14 @@ class InvoiceListResult : AppCompatActivity() {
             button_tag_people.setBackgroundColor(ContextCompat.getColor(this,R.color.colorPrimary))
             button_tag_people.isClickable = true
         }
+    }
+
+    private fun renderImage() {
+        if (!isNeedShowAds || (isNeedShowAds && isAdsLoaded)) {
+            invoice_result_loading.visibility = View.GONE
+        } else {
+            invoice_result_loading.setAnimation(R.raw.loading)
+        }
+        invoice_result_loading.playAnimation()
     }
 }
