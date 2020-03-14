@@ -24,38 +24,6 @@ class RecipientOrderAdapter(private var recipientOrders:ArrayList<RecipientOrder
     override fun onBindViewHolder(holder: RecipientOrderHolder, position: Int) {
         val recipientOrder = recipientOrders[position]
         holder.bindRecipientOrder(recipientOrder)
-        holder.itemView.qty_text.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                recipientOrder.buyQty = s.toString().toDouble()
-            }
-
-        })
-        holder.itemView.minus_button.setOnClickListener {
-            val qtyWillShow = holder.itemView.qty_text.text.toString().toDouble() - 1
-            if (qtyWillShow >= 0) {
-                holder.itemView.qty_text.text = qtyWillShow.toString()
-            }
-        }
-        holder.itemView.plus_button.setOnClickListener {
-            val qtyWillShow = holder.itemView.qty_text.text.toString().toDouble() + 1
-            var qtyMaxLimit = holder.item?.invoiceItem?.quantity
-            if (holder.item?.invoiceItem?.type == InvoiceItem.InvoiceType.SHARED_FEE) {
-                qtyMaxLimit = 1.0
-            }
-            qtyMaxLimit?.let {
-                if (qtyWillShow <= it) {
-                    holder.itemView.qty_text.text = qtyWillShow.toString()
-                }
-            }
-        }
     }
 
     class RecipientOrderHolder(private var view: View): RecyclerView.ViewHolder(view) {
@@ -65,6 +33,29 @@ class RecipientOrderAdapter(private var recipientOrders:ArrayList<RecipientOrder
             this.item = recipientOrder
             view.item_name.text = recipientOrder.invoiceItem?.name
             view.qty_text.text = recipientOrder.buyQty.toString()
+
+            view.minus_button.setOnClickListener {
+                val qtyWillShow = view.qty_text.text.toString().toDouble() - 1
+                if (qtyWillShow >= 0) {
+                    view.qty_text.text = qtyWillShow.toString()
+                    recipientOrder.buyQty  = qtyWillShow
+                }
+            }
+
+            view.plus_button.setOnClickListener {
+                val qtyWillShow = view.qty_text.text.toString().toDouble() + 1
+                var qtyMaxLimit = item?.invoiceItem?.quantity
+                if (item?.invoiceItem?.type == InvoiceItem.InvoiceType.SHARED_FEE) {
+                    qtyMaxLimit = 1.0
+                }
+                qtyMaxLimit?.let {
+                    if (qtyWillShow <= it) {
+                        Log.d("change qty", "${qtyWillShow} ${view.qty_text.text}")
+                        view.qty_text.text = qtyWillShow.toString()
+                        recipientOrder.buyQty  = qtyWillShow
+                    }
+                }
+            }
         }
     }
 }

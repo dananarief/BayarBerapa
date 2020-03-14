@@ -142,6 +142,7 @@ class InvoiceListPreview : AppCompatActivity() {
         var isValid: Boolean = false
         invoice?.invoiceItems?.let {
             isValid = true
+            var isSubTotalFound = false
             for (item in it) {
                 if (item.name.isEmpty()) {
                     Toast.makeText(this, "Terdapat nama item yang kosong", Toast.LENGTH_LONG).show()
@@ -152,7 +153,17 @@ class InvoiceListPreview : AppCompatActivity() {
                     Toast.makeText(this, "Terdapat tipe item yang kosong", Toast.LENGTH_LONG).show()
                     return false
                 }
+
+                if (item.type == InvoiceItem.InvoiceType.SUBTOTAL) {
+                    isSubTotalFound = true
+                }
             }
+
+            if (!isSubTotalFound) {
+                Toast.makeText(this, "Gagal mendeteksi subtotal, silakan tambahkan manual", Toast.LENGTH_LONG).show()
+            }
+
+            isValid = isValid && isSubTotalFound
         }
         return isValid
     }

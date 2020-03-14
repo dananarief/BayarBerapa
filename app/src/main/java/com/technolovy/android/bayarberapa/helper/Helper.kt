@@ -43,6 +43,8 @@ fun extractPriceToDouble(text: String): Double? {
     var checkText = text
 
     checkText = checkText.replace("Rp", "")
+    checkText = checkText.replace("o", "0")
+    checkText = checkText.replace("O", "0")
     checkText = checkText.replace(".", "")
     checkText = checkText.replace(",", "")
 

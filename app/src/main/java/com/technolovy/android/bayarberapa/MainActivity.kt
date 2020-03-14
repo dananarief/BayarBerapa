@@ -72,10 +72,12 @@ class MainActivity : AppCompatActivity() {
         MobileAds.initialize(this, "ca-app-pub-8342384986875866~7993633723")
         interstitialAds = InterstitialAd(this)
         //this is the real ads unit id
-        //interstitialAds.adUnitId = "ca-app-pub-8342384986875866/6260436572"
-
-        //this is the testing ads id
-        interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        if (BuildConfig.DEBUG) {
+            //this is the testing ads id
+            interstitialAds.adUnitId = "ca-app-pub-3940256099942544/1033173712"
+        } else {
+            interstitialAds.adUnitId = "ca-app-pub-8342384986875866/6260436572"
+        }
 
         interstitialAds.adListener = object: AdListener() {
             override fun onAdLoaded() {
@@ -86,11 +88,7 @@ class MainActivity : AppCompatActivity() {
             override fun onAdClosed() {
                 super.onAdClosed()
                 interstitialAds.loadAd(AdRequest.Builder().build())
-                if (invoice != null && isAdsLoaded) {
-                    processButton()
-                } else if (!isAdsLoaded) {
-                    Toast.makeText(this@MainActivity, "Sepertinya internet mu tidak nyala", Toast.LENGTH_SHORT).show()
-                }
+                processButton()
             }
 
             override fun onAdFailedToLoad(p0: Int) {
@@ -128,7 +126,12 @@ class MainActivity : AppCompatActivity() {
             if (invoice == null) {
                 chooseButton()
             } else {
-                interstitialAds.show()
+                if (invoice != null && isAdsLoaded) {
+                    interstitialAds.show()
+                } else {
+                    sendTracker(TrackerEvent.adsFailToLoadWhenClickPrrocessButtonOnUploadInvoicePage, this@MainActivity)
+                    Toast.makeText(this@MainActivity, R.string.ads_fail_load_msg, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -136,7 +139,7 @@ class MainActivity : AppCompatActivity() {
     private fun setImageInfoTextListener() {
         place_holder_text.setOnClickListener {
             sendTracker(TrackerEvent.deleteImageOnUploadInvoice,this)
-            if (invoice != null) {
+            if ((invoice != null) || ((invoice == null) &&(invoiceImageUri != null))) {
                 invoice = null
                 invoiceImageUri = null
                 InvoiceManager.invoiceImg = null
@@ -234,9 +237,10 @@ class MainActivity : AppCompatActivity() {
             //implement later
         } else {
             sendTrackerError(TrackerEvent.errorRecognizeBrand, this, "brand not found")
+            invoice = null
             Toast.makeText(
                 this,
-                "Mohon maaf, invoice belum dikenali. Silakan gunakan fitur manual", Toast.LENGTH_LONG
+                "Mohon maaf, invoice belum dikenali", Toast.LENGTH_LONG
             ).show()
         }
 
@@ -284,8 +288,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun renderImageInfoText() {
-        if (invoice == null) {
-            place_holder_text.text = "Silakan ulpload invoice Grab mu..."
+        if (invoice == null && invoiceImageUri == null) {
+            place_holder_text.text = "Silakan upload invoice Grab mu..."
             place_holder_text.setTextColor(ContextCompat.getColor(this,android.R.color.tab_indicator_text))
         } else {
             place_holder_text.text = "Hapus Gambar"

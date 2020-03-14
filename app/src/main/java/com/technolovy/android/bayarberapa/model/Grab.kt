@@ -185,13 +185,21 @@ class Grab: InvoiceITF, Serializable {
     }
 
     private fun fillTypeForInvoiceItems(invoiceItems: MutableMap<Rect, InvoiceItem>) {
-        for ((_, v) in invoiceItems) {
+        for ((k, v) in invoiceItems) {
             if (v.quantity > 0) {
                 v.type = InvoiceItem.InvoiceType.PURCHASEITEM
             } else if (v.name.contains("Promo",ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.DISCOUNT
             } else if (v.name.contains("tax", ignoreCase = true)) {
-                v.type = InvoiceItem.InvoiceType.TAX
+                if (v.name.contains("incl")) {
+                    //incl tax is already calculted into item price
+                    //invoiceItems.remove(k)
+                    v.name = "incl. tax (sudah dimasukkan di harga barang)"
+                    v.type = InvoiceItem.InvoiceType.AlreadyTAX
+                } else {
+                    v.name = "additional tax (akan ditambahkan saat perhitungan)"
+                    v.type = InvoiceItem.InvoiceType.TAX
+                }
             } else if (v.name.contains("delivery fee", ignoreCase = true)) {
                 v.type = InvoiceItem.InvoiceType.SHARED_FEE
             } else if (v.name.contains("charges by restaurant", ignoreCase = true)) {
@@ -207,7 +215,7 @@ class Grab: InvoiceITF, Serializable {
     override fun calculate(invoiceItems: ArrayList<InvoiceItem>): ArrayList<InvoiceItem> {
         //will set invoice item pricePerUnit attribute
         var subTotal = 0.0
-        var taxPercentage = 0.0
+        var taxPercentage = ArrayList<Double>()
         var discountPercentage = 0.0
 
         //get info about subtotal
@@ -220,8 +228,10 @@ class Grab: InvoiceITF, Serializable {
         //get info about tax percentage and discount percentage
         for (invoiceItem in invoiceItems) {
             if (invoiceItem.type == InvoiceItem.InvoiceType.TAX) {
-                taxPercentage = invoiceItem.price / subTotal
+                val percentage = invoiceItem.price / subTotal
+                taxPercentage.add(percentage)
             }
+
 
             if (invoiceItem.type == InvoiceItem.InvoiceType.DISCOUNT) {
                 discountPercentage = abs(invoiceItem.price) / subTotal
@@ -235,10 +245,13 @@ class Grab: InvoiceITF, Serializable {
 
                 val discountPriceperQty: Double = pricePerQuantity * discountPercentage
 
-                val taxPricePerQty: Double = pricePerQuantity * taxPercentage
-
                 var resultPricePerUnit = pricePerQuantity
-                resultPricePerUnit += taxPricePerQty
+
+                for (percentage in taxPercentage) {
+                    val taxPricePerQty: Double = pricePerQuantity * percentage
+                    resultPricePerUnit += taxPricePerQty
+                }
+
                 resultPricePerUnit -= discountPriceperQty
 
                 invoiceItem.pricePerUnit = resultPricePerUnit
@@ -253,7 +266,7 @@ class Grab: InvoiceITF, Serializable {
 
         for (item in this.invoiceItems ) {
             println("${item.rect} ${item.getPriceForDebug()}")
-            //Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
+            Log.d("result","${item.rect} ${item.getPriceForDebug()} ${item.name} ${item.quantity} ${item.type} ${item.pricePerUnit}")
         }
 
         return invoiceItems
@@ -287,6 +300,11 @@ class Grab: InvoiceITF, Serializable {
     }
 
     private fun improveResult(result: HashMap<Rect, InvoiceItem>) {
+        autoFillTax(result)
+        removeWrongKey(result)
+    }
+
+    private fun autoFillTax(result: HashMap<Rect, InvoiceItem>) {
 
         var missingInvoiceInfo: InvoiceItem? = null
 
@@ -330,8 +348,36 @@ class Grab: InvoiceITF, Serializable {
         }
 
         if (isTheMissingInvoiceTax) {
-            missingInvoiceInfo?.name = "tax"
+            missingInvoiceInfo?.name = "tax terpisah"
             missingInvoiceInfo?.type = InvoiceItem.InvoiceType.TAX
+        }
+    }
+
+    //to handle something like "buy 20 get 20 10.000", and result in 3 items (10.000, 20, 20)
+    private fun removeWrongKey(result: HashMap<Rect, InvoiceItem>) {
+        var priceBound: Rect? = null
+
+        for ((_, v) in result) {
+            if (v.type == InvoiceItem.InvoiceType.SUBTOTAL) {
+                priceBound = v.rect
+                break
+            }
+        }
+
+
+        var keyToRemove = ArrayList<Rect>()
+        for ((_, v) in result) {
+            v.rect?.let { itemRect ->
+                priceBound?.let { boundRect ->
+                    if (itemRect.right < boundRect.left) {
+                        keyToRemove.add(itemRect)
+                    }
+                }
+            }
+        }
+
+        for (k in keyToRemove) {
+            result.remove(k)
         }
     }
 }

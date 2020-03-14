@@ -1,7 +1,9 @@
 package com.technolovy.android.bayarberapa.helper
 
+import com.technolovy.android.bayarberapa.BuildConfig
+
 object Constant {
-    const val AppsVersion = "1.0"
+    const val AppsVersion = BuildConfig.VERSION_NAME
 
 }
 
@@ -33,11 +35,13 @@ object TrackerEvent {
     const val adsClickedOnUploadInvoicePage = "uploadingInvoicePage_adsClicked"
     const val adsImpressionOnUploadInvoicePage = "uploadingInvoicePage_adsImpression"
     const val adsLeftOnUploadInvoicePage = "uploadingInvoicePage_adsLeftApp"
+    const val adsFailToLoadWhenClickPrrocessButtonOnUploadInvoicePage = "uploadingInvoicePage_adsFailtoLoadWhenClickProcess"
 
     const val adsShowOnInvoiceListResult = "invoiceListResult_adsShow"
     const val adsFailToLoadOnInvoiceListResult = "invoiceListResult_adsFailtoLoad"
     const val adsClickedOnInvoiceListResult = "invoiceListResult_adsClicked"
     const val adsImpressionOnInvoiceListResult = "invoiceListResult_adsImpression"
     const val adsLeftOnInvoiceListResult = "invoiceListResult_adsLeftApp"
+    const val adsFailToLoadWhenClickTagFriendsOnInvoiceListResult = "invoiceListResult_adsFailtoLoadWhenClickTagFriends"
 
 }

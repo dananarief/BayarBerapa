@@ -4,7 +4,8 @@
         <item>Not Recognized</item>
         <item>Purchase</item>
         <item>Discount</item>
-        <item>Tax</item>
+        <item>Additional Tax</item>
+        <item>Include Tax</item>
         <item>Shared Fee</item>
         <item>Subtotal</item>
     </string-array>
@@ -14,9 +15,9 @@
     <string name="about_app_descriptions">
         Bayar Berapa adalah aplikasi penghitungan invoice secara otomatis dengan memanfaatkan teknologi pengenalan gambar.
         Saat ini aplikasi baru mendukung untuk pengenalan invoice Grab. Tunggu fitur - fitur kami berikutnya yaa :)
-    </string>>
+    </string>
     <string name="about_app_contacts">
         Jika kamu ada masukan atau keluhan, Silakan untuk menginformasikan melalui email: <b>support@technolovy.com</b>
     </string>
-    >
+    <string name="ads_fail_load_msg">Sepertinya internet kamu mati atau sedang lamban, coba lagi ya</string>
 </resources>
